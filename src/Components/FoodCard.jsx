@@ -4,7 +4,7 @@ import { FiPlus } from 'react-icons/fi';
 export default function FoodCard({ details }) {
   const { name, image, price, description, category, veg } = details;
   return (
-    <div className='shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[450px] text-black'>
+    <div className='shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[475px] text-black hover:scale-105 transition-all duration-300'>
       <img
         src='/burger.jpg'
         alt='burger'

@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { IoIosSearch } from 'react-icons/io';
+import { CiShoppingCart } from 'react-icons/ci';
 import FoodCard from './FoodCard';
 
 export default function Menu() {
   const [activeId, setActiveId] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   function handleMenuCategory(id) {
     setActiveId(id);
+  }
+
+  function toggleCart() {
+    setIsCartOpen((isOpen) => !isOpen);
   }
 
   const menuCategory = [
@@ -34,7 +40,7 @@ export default function Menu() {
 
   const foodDetails = [
     {
-      id: 111,
+      id: 1,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -44,7 +50,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 2,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -54,7 +60,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 3,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -64,7 +70,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 15,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -74,7 +80,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 4,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -84,7 +90,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 5,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -94,7 +100,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 6,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -104,7 +110,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 7,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -114,7 +120,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 8,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -124,7 +130,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 9,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -134,7 +140,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 10,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -144,7 +150,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 11,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -154,7 +160,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 12,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -164,7 +170,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
+      id: 13,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -174,107 +180,7 @@ export default function Menu() {
       veg: false,
     },
     {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
-      name: 'Pizza',
-      image: '',
-      price: 300,
-      category: 'pizza',
-      description:
-        'This is the italian pizza replicated with our own magic and perfection.',
-      veg: false,
-    },
-    {
-      id: 111,
+      id: 14,
       name: 'Pizza',
       image: '',
       price: 300,
@@ -290,10 +196,51 @@ export default function Menu() {
         <h1 className='font-semibold text-amber-600 text-3xl'>
           Delicious Menu
         </h1>
-        <p>Logo</p>
+
+        {/* Cart */}
+        <div
+          className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
+          onClick={toggleCart}>
+          <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
+          <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
+            1
+          </p>
+        </div>
+
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 right-0 h-full w-[400px] bg-white shadow-xl transition-transform duration-300 z-50
+        ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className='relative flex justify-between items-center p-4'>
+            <h2 className='font-semibold text-xl'>Your Order</h2>
+            <button
+              onClick={toggleCart}
+              className='-top-1 right-4 absolute p-1 text-2xl'>
+              ×
+            </button>
+          </div>
+
+          {/* Cart Items Here */}
+          <div className='flex flex-col justify-center items-center p-4 h-[80%] text-gray-400'>
+            {isCartOpen ? (
+              <>
+                <CiShoppingCart className='font-extrabold text-6xl' />
+                <p className='text-sm'>Your cart is empty</p>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+
+        {isCartOpen && (
+          <div
+            onClick={toggleCart}
+            className='z-40 fixed inset-0 backdrop-blur-sm brightness-50'></div>
+        )}
       </nav>
       <div className='relative flex flex-col justify-center items-center gap-18'>
-        <IoIosSearch className='top-4 left-110 absolute text-2xl' />
+        <IoIosSearch className='top-4 left-95 absolute text-2xl' />
         <input
           type='search'
           className='px-13 py-2 border border-amber-500/40 rounded-xl focus:outline-amber-500 w-[700px] h-14 text-sm'
@@ -315,7 +262,7 @@ export default function Menu() {
         </ul>
         <div className='gap-6 grid grid-cols-3 grid-flow-row'>
           {foodDetails.map((item) => (
-            <FoodCard details={item} />
+            <FoodCard details={item} key={item.id} />
           ))}
         </div>
       </div>
