@@ -102,7 +102,7 @@ export default function CategoryHourlyBarChart({ date }) {
 
   return (
     <div className="w-200">
-      <Bar data={chartData} options={options} />;
+      <Bar data={chartData} options={options} />
     </div>
   );
 }

@@ -40,7 +40,9 @@ export default function QueuedOrders() {
                 onClick={() => toggleDropdown(order.id)}
               >
                 <div>
-                  <p className="font-semibold">Order ID: {order.id}</p>
+                  <p className="font-semibold">
+                    Table No: {order.table_number}
+                  </p>
                 </div>
                 <p className="text-sm text-gray-500">
                   Total: Rs. {order.total_amount ?? "0.00"}
