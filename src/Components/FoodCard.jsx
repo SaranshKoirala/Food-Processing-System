@@ -1,58 +1,62 @@
+import { useState } from 'react';
 import { FiMinus } from 'react-icons/fi';
 import { FiPlus } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 export default function FoodCard({ details, handleCartItem }) {
   const { name, image, price, description, category, veg } = details;
+  const [offer, setOffer] = useState(false);
   const food = details;
   return (
-    <div className='shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[475px] text-black hover:scale-105 transition-all duration-300'>
-      <img
-        src='/burger.jpg'
-        alt='burger'
-        className='rounded-t-2xl w-full h-[270px]'
-      />
+    <Link to={'/menu/:id'}>
+      <div className='group relative shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[475px] overflow-hidden text-black'>
+        <img
+          src='/burger.jpg'
+          alt='burger'
+          className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-105 transition-all duration-300'
+        />
 
-      <div className='p-4'>
-        <p className='mb-2 font-semibold text-xl'>Classic Burger</p>
+        <div className='p-4 hover:text-amber-500'>
+          <p className='mb-2 font-semibold text-xl'>Classic Burger</p>
 
-        <div className='flex flex-wrap gap-2 text-white text-sm'>
-          <p className='bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit'>
-            Category
-          </p>
-
-          {veg ? (
-            <p className='bg-gray-400/50 px-2 py-0.5 border border-gray-300 rounded-xl w-fit'>
-              Veg
+          <div className='flex flex-wrap gap-2 text-white text-sm'>
+            <p className='bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit'>
+              Category
             </p>
-          ) : (
-            <p className='bg-gray-400/50 px-2 py-0.5 border border-gray-300 rounded-xl w-fit'>
-              Non-Veg
+
+            {veg ? (
+              <p className='bg-gray-400/50 px-2 py-0.5 border border-gray-300 rounded-xl w-fit'>
+                Veg
+              </p>
+            ) : (
+              <p className='bg-gray-400/50 px-2 py-0.5 border border-gray-300 rounded-xl w-fit'>
+                Non-Veg
+              </p>
+            )}
+
+            <p className='text-gray-600'>
+              Juicy beef patty with fresh lettuce, tomatoes, cheese, and special
+              sauce
             </p>
-          )}
 
-          <p className='text-gray-600'>
-            Juicy beef patty with fresh lettuce, tomatoes, cheese, and special
-            sauce
-          </p>
-
-          <div className='flex gap-2 w-full text-black'>
-            <div className='flex justify-center items-center gap-4 bg-amber-500/10 p-1 rounded-xl w-fit'>
-              <button className='hover:bg-amber-500 px-1 py-1 hover:rounded-md cursor-pointer'>
-                <FiMinus className='text-sm' />
-              </button>
-              <p className='text-sm'>1</p>
-              <button className='hover:bg-amber-500 px-1 py-1 hover:rounded-md cursor-pointer'>
-                <FiPlus className='text-sm' />
+            <div className='flex justify-evenly gap-2 w-full text-black'>
+              <div className='hover:bg-amber-500/20 hover:shadow-2xl p-0.5 hover:p-0.5 rounded-2xl hover:rounded-2xl w-[40%] font-semibold text-amber-600 hover:text-amber-700 text-xl text-center transition-all duration-300 cursor-pointer'>
+                Rs {price}
+              </div>
+              <button
+                className='bg-amber-500 hover:bg-black/50 rounded-xl w-[60%] text-white hover:text-white text-center transition-all duration-300 cursor-pointer'
+                onClick={() => handleCartItem(food)}>
+                Add to Cart
               </button>
             </div>
-            <button
-              className='flex-1 bg-amber-500 rounded-xl text-center'
-              onClick={() => handleCartItem(food)}>
-              Add to Cart
-            </button>
           </div>
         </div>
+
+        {/* Place for offers in percentage mostly */}
+        {offer && (
+          <div className='top-2 right-4 z-100 absolute bg-amber-500 rounded-full w-7 h-7'></div>
+        )}
       </div>
-    </div>
+    </Link>
   );
 }
