@@ -1,10 +1,26 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { LogoutOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import axios from "../../api/axios";
 
 export default function Navbar({ children }) {
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logout clicked");
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/logout");
+
+      localStorage.removeItem("user");
+
+      delete axios.defaults.headers.common["Authorization"];
+
+      navigate("/login", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+      localStorage.removeItem("user");
+      delete axios.defaults.headers.common["Authorization"];
+      navigate("/login", { replace: true });
+    }
   };
 
   return (
