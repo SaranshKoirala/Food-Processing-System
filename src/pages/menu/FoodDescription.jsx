@@ -2,10 +2,12 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
+import { useCart } from '../../Context/CartContext';
 
 export default function FoodDescription() {
   const { id } = useParams();
 
+  const { addToCart } = useCart();
   const [productDetail, setProductDetail] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -35,19 +37,19 @@ export default function FoodDescription() {
       image: '',
     },
     {
-      id: 1,
+      id: 2,
       name: 'Coca Cola',
       price: 80,
       image: '',
     },
     {
-      id: 1,
+      id: 3,
       name: 'Coca Cola',
       price: 80,
       image: '',
     },
     {
-      id: 1,
+      id: 4,
       name: 'Coca Cola',
       price: 80,
       image: '',
@@ -68,7 +70,7 @@ export default function FoodDescription() {
           </div>
           <div className='flex flex-col justify-between gap-3 h-[450px]'>
             <div>
-              <h1 className='mb-2 font-bold text-5xl'>Margherita Pizza</h1>
+              <h1 className='mb-2 font-bold text-5xl'>{productDetail?.name}</h1>
               <p className='text-amber-500 text-xl'>
                 Rs {productDetail?.price}
               </p>
@@ -76,7 +78,7 @@ export default function FoodDescription() {
             <div>
               <p className='mb-1 font-semibold text-xl'>🍲 About This Dish</p>
               <p className='w-92 font-extralight text-black/40 text-sm'>
-                {productDetail.description} This is one of the delicious food
+                {productDetail?.description} This is one of the delicious food
                 you'll ever have. . Nothing beats the taste of this food. It is
                 made with specialist so don't fear , your money won't go to
                 waste.
@@ -91,7 +93,9 @@ export default function FoodDescription() {
                 <li>Premium Quality</li>
               </ul>
             </div>
-            <button className='bg-amber-500 p-2 rounded-2xl cursor-pointer'>
+            <button
+              className='bg-amber-500 p-2 rounded-2xl hover:text-white transition-all duration-300 cursor-pointer'
+              onClick={() => addToCart(productDetail)}>
               Add To Cart
             </button>
           </div>
@@ -103,13 +107,13 @@ export default function FoodDescription() {
           <p className='mb-3 text-xl'>You may also like </p>
           <ul className='flex justify-center items-center gap-4 list-none'>
             {recommendedProduct.map((product) => (
-              <li className='shadow-2xl rounded-sm h-53'>
+              <li key={product.id} className='shadow-2xl rounded-sm h-53'>
                 <img
                   src='/burger.jpg'
                   alt={product.name}
                   className='rounded-t-md w-50 h-40'
                 />
-                <div className='px-2'>
+                <div className='px-2 py-1'>
                   <p className='font-md text-sm'>{product.name}</p>
                   <p className='font-md text-[13px] text-amber-600'>
                     Rs. {product.price}

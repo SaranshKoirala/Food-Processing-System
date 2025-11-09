@@ -7,30 +7,11 @@ import Navbar from './Navbar';
 
 export default function Menu() {
   const [activeId, setActiveId] = useState(0);
-  const [cartItem, setCartItem] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   function handleMenuCategory(id) {
     setActiveId(id);
-  }
-
-  function handleCartItem(item) {
-    setCartItem((cartItem) => {
-      const existingItemIndex = cartItem.findIndex(
-        (prevProduct) => prevProduct.id === item.id
-      );
-
-      if (existingItemIndex !== -1) {
-        // Product exists - increase quantity
-        const updatedCart = [...cartItem];
-        updatedCart[existingItemIndex].quantity += 1;
-        return updatedCart;
-      } else {
-        // New product - add with quantity 1
-        return [...cartItem, { ...item, quantity: 1 }];
-      }
-    });
   }
 
   const menuCategory = [
@@ -75,7 +56,7 @@ export default function Menu() {
 
   return (
     <div>
-      <Navbar cartItem={cartItem} setCartItem={setCartItem} />
+      <Navbar />
 
       <div className='relative flex flex-col justify-center items-center gap-18'>
         <IoIosSearch className='top-4 left-95 absolute text-2xl' />
@@ -105,11 +86,7 @@ export default function Menu() {
         ) : (
           <div className='gap-6 grid grid-cols-3 grid-flow-row'>
             {products?.map((item) => (
-              <FoodCard
-                details={item}
-                key={item.id}
-                handleCartItem={handleCartItem}
-              />
+              <FoodCard details={item} key={item.id} />
             ))}
           </div>
         )}

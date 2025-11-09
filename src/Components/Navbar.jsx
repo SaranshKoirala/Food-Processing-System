@@ -1,36 +1,18 @@
+// Navbar.js
 import { useEffect, useState } from 'react';
 import { CiShoppingCart } from 'react-icons/ci';
 import { MdOutlineDelete } from 'react-icons/md';
-import { FiMinus } from 'react-icons/fi';
-import { FiPlus } from 'react-icons/fi';
+import { FiMinus, FiPlus } from 'react-icons/fi';
+import { useCart } from '../Context/CartContext.jsx';
+import { Link } from 'react-router-dom';
 
-export default function Navbar({ cartItem, setCartItem }) {
+export default function Navbar() {
+  const { cartItem, increaseQuantity, decreaseQuantity, removeItemFromCart } =
+    useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   function toggleCart() {
     setIsCartOpen((open) => !open);
-  }
-
-  function decreaseQuantity(productId) {
-    setCartItem((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  }
-
-  function increaseQuantity(productId) {
-    setCartItem((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  }
-
-  function removeItemFromCart(productId) {
-    setCartItem((prevCart) => prevCart.filter((item) => item.id !== productId));
   }
 
   const totalPrice =
@@ -64,15 +46,14 @@ export default function Navbar({ cartItem, setCartItem }) {
           className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
           onClick={toggleCart}>
           <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
-          {(cartItem?.length || 0) > 0 ? (
+          {(cartItem?.length || 0) > 0 && (
             <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
               {cartItem.length}
             </p>
-          ) : (
-            <></>
           )}
         </div>
       </nav>
+
       {/* Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full w-[450px] bg-white shadow-xl transition-transform duration-300 z-50 flex flex-col 
@@ -112,9 +93,7 @@ export default function Navbar({ cartItem, setCartItem }) {
                   <div className='flex justify-center items-center gap-2 rounded-xl'>
                     <button
                       className='hover:bg-amber-500 px-0.5 py-0.5 border border-black/30 hover:border-amber-500/50 rounded-md hover:text-white cursor-pointer'
-                      onClick={() => {
-                        decreaseQuantity(item.id);
-                      }}>
+                      onClick={() => decreaseQuantity(item.id)}>
                       <FiMinus className='text-[13px]' />
                     </button>
                     <p className='text-[13px]'>{item.quantity}</p>
@@ -139,15 +118,17 @@ export default function Navbar({ cartItem, setCartItem }) {
           <div className='px-6 pb-6'>
             <div className='flex justify-between items-center pt-2 border-black/20 border-t text-black/40 text-sm'>
               <p>Subtotal</p>
-              <p>{totalPrice.toFixed(2)}</p>
+              <p>Rs {totalPrice.toFixed(2)}</p>
             </div>
             <div className='flex justify-between items-center mb-2 font-semibold'>
               <p>Total</p>
-              <p>{totalPrice.toFixed(2)}</p>
+              <p>Rs {totalPrice.toFixed(2)}</p>
             </div>
-            <button className='bg-amber-500 p-2 rounded-xl w-full font-semibold text-white'>
-              Place Order
-            </button>
+            <Link to={'/checkout'}>
+              <button className='bg-amber-500 p-2 rounded-xl w-full font-semibold text-white cursor-pointer'>
+                Place Order
+              </button>
+            </Link>
           </div>
         )}
       </div>

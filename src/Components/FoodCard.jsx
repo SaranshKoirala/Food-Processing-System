@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../Context/CartContext.jsx';
 
-export default function FoodCard({ details, handleCartItem }) {
+export default function FoodCard({ details }) {
   const { id, name, price, description, category, veg } = details;
   const [offer, setOffer] = useState(false);
   const food = details;
+
+  const { addToCart } = useCart();
   return (
     <div className='group relative shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[475px] overflow-hidden text-black'>
       <Link to={`/menu/${id}`}>
@@ -41,7 +44,7 @@ export default function FoodCard({ details, handleCartItem }) {
           </div>
           <button
             className='bg-amber-500 hover:bg-black/50 rounded-xl w-[60%] text-white hover:text-white text-center transition-all duration-300 cursor-pointer'
-            onClick={() => handleCartItem(food)}>
+            onClick={() => addToCart(food)}>
             Add to Cart
           </button>
         </div>
