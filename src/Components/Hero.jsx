@@ -8,9 +8,11 @@ export default function Hero() {
         className='brightness-50 w-full h-full object-center object-cover'
         alt='background'
       />
-      <div className='top-4 right-10 absolute font-semibold cursor-pointer'>
-        Admin
-      </div>
+      <Link to={'/admin/dashboard'}>
+        <div className='top-4 right-10 absolute font-semibold cursor-pointer'>
+          Admin
+        </div>
+      </Link>
       <div className='top-70 left-40 absolute flex flex-col items-start -gap-2 text-2xl'>
         <h2 className='font-extrabold text-8xl'>Delicious Moments</h2>
         <p className='mb-5 w-[650px] font-extralight'>
