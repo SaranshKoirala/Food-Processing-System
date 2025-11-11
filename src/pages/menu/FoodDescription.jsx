@@ -58,7 +58,7 @@ export default function FoodDescription() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar backStatus={true} cartStatus={true} />
       <div className='flex flex-col justify-start items-center gap-20 mx-auto p-5 w-fit'>
         <div className='relative flex justify-center items-center gap-10'>
           <div className='rounded-3xl w-[500px] h-[450px] overflow-hidden'>

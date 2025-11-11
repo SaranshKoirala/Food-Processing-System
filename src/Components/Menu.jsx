@@ -56,7 +56,7 @@ export default function Menu() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar backStatus={false} cartStatus={true} />
 
       <div className='relative flex flex-col justify-center items-center gap-18'>
         <IoIosSearch className='top-4 left-95 absolute text-2xl' />

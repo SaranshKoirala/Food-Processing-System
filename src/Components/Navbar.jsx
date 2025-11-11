@@ -5,11 +5,14 @@ import { MdOutlineDelete } from 'react-icons/md';
 import { FiMinus, FiPlus } from 'react-icons/fi';
 import { useCart } from '../Context/CartContext.jsx';
 import { Link } from 'react-router-dom';
+import { FaLongArrowAltLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-export default function Navbar() {
+export default function Navbar({ backStatus, cartStatus }) {
   const { cartItem, increaseQuantity, decreaseQuantity, removeItemFromCart } =
     useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const navigate = useNavigate();
 
   function toggleCart() {
     setIsCartOpen((open) => !open);
@@ -36,22 +39,33 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className='flex justify-between items-center bg-card/80 shadow-[0_4px_6px_-2px_rgba(0,0,0,0.25)] mb-15 px-7 py-5'>
-        <h1 className='font-semibold text-amber-600 text-3xl'>
-          Delicious Menu
-        </h1>
+      <nav className='flex justify-between items-center bg-card/80 shadow-[0_4px_6px_-2px_rgba(0,0,0,0.25)] mb-15 px-4 py-3'>
+        {backStatus ? (
+          <Link to={'/menu'}>
+            <div className='flex justify-center items-center gap-2 hover:bg-amber-500/50 px-3 py-2 hover:rounded-xl text-black'>
+              <FaLongArrowAltLeft />{' '}
+              <p className='font-medium text-sm'>Back to Menu</p>
+            </div>
+          </Link>
+        ) : (
+          <h1 className='font-semibold text-amber-600 text-2xl'>
+            Delicious Menu
+          </h1>
+        )}
 
         {/* Cart */}
-        <div
-          className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
-          onClick={toggleCart}>
-          <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
-          {(cartItem?.length || 0) > 0 && (
-            <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
-              {cartItem.length}
-            </p>
-          )}
-        </div>
+        {cartStatus && (
+          <div
+            className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
+            onClick={toggleCart}>
+            <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
+            {(cartItem?.length || 0) > 0 && (
+              <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
+                {cartItem.length}
+              </p>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* Sidebar */}
