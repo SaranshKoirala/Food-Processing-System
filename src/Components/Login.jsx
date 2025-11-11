@@ -52,20 +52,19 @@ export default function Login() {
         return;
       }
 
+      console.log(response.data.token);
+
       const userData = response.data.user;
       const token = response.data.token;
 
-      // Store user and token
       localStorage.setItem("user", JSON.stringify({ ...userData, token }));
 
-      // Only navigate if role is employee (or admin)
-      if (userData.role === "employee") {
+      if (userData.role === "admin") {
         navigate("/admin/dashboard");
       } else {
         setError("You do not have access to the admin dashboard.");
       }
     } catch (err) {
-      // Check backend error message
       const msg = err.response?.data?.message || "Login failed";
       setError(msg);
     } finally {
