@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function NotFound() {
+export default function PageNotFound() {
   return (
     <div className="w-screen h-screen">
       <main

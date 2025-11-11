@@ -23,12 +23,20 @@ export default function PermissionDenied() {
           You do not have the required permissions to access this page or
           perform this action.
         </p>
-        <Link
-          to="/login"
-          className="bg-[#2374E1] text-white font-medium text-base rounded-lg py-3 px-6 w-[120px] sm:w-[140px] md:w-[156px] h-11 sm:h-[50px] md:h-[54px] mt-6 flex items-center justify-center"
-        >
-          Go to Login
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to="/"
+            className="text-black border border-[#2374E1]  font-medium text-base rounded-lg py-3 px-6 w-[120px] sm:w-[140px] md:w-[156px] h-11 sm:h-[50px] md:h-[54px] mt-6 flex items-center justify-center"
+          >
+            Home{" "}
+          </Link>
+          <Link
+            to="/login"
+            className=" text-black border border-[#2374E1] font-medium text-base rounded-lg py-3 px-6 w-[120px] sm:w-[140px] md:w-[156px] h-11 sm:h-[50px] md:h-[54px] mt-6 flex items-center justify-center"
+          >
+            Login
+          </Link>
+        </div>
       </div>
     </main>
   );

@@ -19,7 +19,7 @@ export default function Navbar({ children }) {
       console.error("Logout failed:", err);
       localStorage.removeItem("user");
       delete axios.defaults.headers.common["Authorization"];
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 

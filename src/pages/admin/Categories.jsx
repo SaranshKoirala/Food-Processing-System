@@ -1,34 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  Collapse,
-  Paper,
-  Stack,
-  Divider,
-  Fade,
-  Grow,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
-import {
-  Add as AddIcon,
-  ExpandMore as ExpandMoreIcon,
-  Category as CategoryIcon,
-  Warning as WarningIcon,
-  Description as DescriptionIcon,
-  CalendarToday as CalendarTodayIcon,
-} from "@mui/icons-material";
 import axios from "../../api/axios";
+import { Transition } from "@headlessui/react";
+import { ChevronDown } from "lucide-react";
+import { Add01FreeIcons } from "@hugeicons/core-free-icons";
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
@@ -43,421 +18,217 @@ export default function Categories() {
     axios.get("/categories").then((res) => setCategories(res.data));
   }, []);
 
-  const handleDeleteClick = (category) => {
+  const handleDeleteClick = (category) =>
     setDeleteDialog({ open: true, category });
-  };
+  const handleDeleteCancel = () =>
+    setDeleteDialog({ open: false, category: null });
 
   const handleDeleteConfirm = async () => {
     const { category } = deleteDialog;
-
     try {
       await axios.delete(`categories/${category.id}`);
       setCategories(categories.filter((c) => c.id !== category.id));
       setDeleteDialog({ open: false, category: null });
     } catch (err) {
-      console.error("Delete failed:", err);
+      console.error(err);
       alert("Failed to delete category.");
     }
   };
 
-  const handleDeleteCancel = () => {
-    setDeleteDialog({ open: false, category: null });
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
 
   return (
-    <Box
-      sx={{ maxHeight: "90vh", bgcolor: "#f8f9fa", py: 4, overflowY: "auto" }}
-    >
-      <Container maxWidth="lg">
-        <Stack spacing={4}>
-          {/* Header */}
-          <Fade in timeout={600}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: { xs: "flex-start", sm: "center" },
-                flexDirection: { xs: "column", sm: "row" },
-                gap: 2,
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="h3"
-                  fontWeight={700}
-                  sx={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    mb: 1,
-                  }}
-                >
-                  Categories
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Manage your product categories
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate("/admin/categories/add")}
-                sx={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  boxShadow: "0 4px 20px rgba(102, 126, 234, 0.4)",
-                  textTransform: "none",
-                  px: 3,
-                  py: 1.5,
-                  borderRadius: 2,
-                  fontWeight: 600,
-                  "&:hover": {
-                    background:
-                      "linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)",
-                    boxShadow: "0 6px 25px rgba(102, 126, 234, 0.5)",
-                  },
-                }}
-              >
-                Add Category
-              </Button>
-            </Box>
-          </Fade>
+    <div className="max-h-[90vh] overflow-y-auto bg-gray-50 py-10 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto flex flex-col gap-10">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-purple-600 mb-1">
+              Categories
+            </h1>
+            <p className="text-gray-500">Manage your product categories</p>
+          </div>
+          <button
+            onClick={() => navigate("/admin/categories/add")}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-semibold bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg hover:from-indigo-600 hover:to-purple-700 transition-all"
+          >
+            <img src="/plus.png" alt="Add" className="h-5 w-5" />
+            Add Category
+          </button>
+        </div>
 
-          {/* Categories List */}
-          {categories.length === 0 ? (
-            <Fade in timeout={800}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 8,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  border: "2px dashed #e0e0e0",
-                  bgcolor: "white",
-                }}
+        {/* Categories List */}
+        {categories.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-3xl bg-white text-center">
+            <img
+              src="/category-icon.svg"
+              alt=""
+              className="h-20 w-20 mb-4 text-gray-400"
+            />
+            <h2 className="text-xl font-semibold mb-1">No categories yet</h2>
+            <p className="text-gray-500">
+              Get started by adding your first category
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {categories.map((category, index) => (
+              <Transition
+                appear
+                show={true}
+                key={category.id}
+                enter="transition duration-500 ease-out"
+                enterFrom="transform scale-95 opacity-0"
+                enterTo="transform scale-100 opacity-100"
               >
-                <CategoryIcon sx={{ fontSize: 80, color: "#bdbdbd", mb: 2 }} />
-                <Typography variant="h5" fontWeight={600} gutterBottom>
-                  No categories yet
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Get started by adding your first category
-                </Typography>
-              </Paper>
-            </Fade>
-          ) : (
-            <Stack spacing={2}>
-              {categories.map((category, index) => (
-                <Grow
-                  in
-                  timeout={600}
-                  style={{ transformOrigin: "0 0 0" }}
-                  {...{ timeout: 600 + index * 100 }}
-                  key={category.id}
-                >
-                  <Card
-                    elevation={0}
-                    sx={{
-                      borderRadius: 3,
-                      border: "1px solid #e0e0e0",
-                      overflow: "hidden",
-                      transition: "all 0.3s ease",
-                      bgcolor: "white",
-                      "&:hover": {
-                        boxShadow: "0 8px 30px rgba(102, 126, 234, 0.15)",
-                        borderColor: "#667eea",
-                      },
-                    }}
+                <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-500 transition-all">
+                  {/* Category Header */}
+                  <div
+                    onClick={() =>
+                      setExpandedId(
+                        expandedId === category.id ? null : category.id
+                      )
+                    }
+                    className="flex justify-between items-center p-4 cursor-pointer"
                   >
-                    {/* Category Header */}
-                    <CardContent
-                      sx={{
-                        p: 3,
-                        cursor: "pointer",
-                        "&:last-child": { pb: 3 },
-                      }}
-                      onClick={() =>
-                        setExpandedId(
-                          expandedId === category.id ? null : category.id
-                        )
-                      }
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 flex items-center justify-center rounded-xl border border-indigo-300 bg-indigo-100/20">
+                        <img
+                          src="/categorization.png"
+                          alt=""
+                          className="h-7 w-7 text-indigo-500"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold">
+                          {category.name}
+                        </h3>
+                        <p className="text-gray-500 truncate">
+                          {category.description || "No description"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/admin/categories/edit/${category.id}`);
                         }}
+                        className="p-2 rounded-full hover:bg-indigo-100/50 hover:text-indigo-500 transition-all"
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                            flex: 1,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              width: 56,
-                              height: 56,
-                              borderRadius: 2,
-                              background:
-                                "linear-gradient(135deg, #667eea20 0%, #764ba220 100%)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              border: "1px solid #667eea30",
-                            }}
-                          >
-                            <CategoryIcon
-                              sx={{ fontSize: 28, color: "#667eea" }}
-                            />
-                          </Box>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography
-                              variant="h6"
-                              fontWeight={600}
-                              gutterBottom
-                            >
-                              {category.name}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                display: "-webkit-box",
-                                WebkitLineClamp: 1,
-                                WebkitBoxOrient: "vertical",
-                              }}
-                            >
-                              {category.description || "No description"}
-                            </Typography>
-                          </Box>
-                        </Box>
+                        <img src="/edit.png" alt="" className="h-6 w-6" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(category);
+                        }}
+                        className="p-2 rounded-full hover:bg-red-100/50 hover:text-red-600 transition-all"
+                      >
+                        <img src="/delete (1).png" alt="" className="h-6 w-6" />
+                      </button>
+                      <div
+                        className={`transform transition-transform duration-300 ${
+                          expandedId === category.id ? "rotate-180" : "rotate-0"
+                        }`}
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
 
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/admin/categories/edit/${category.id}`);
-                            }}
-                            sx={{
-                              "&:hover": {
-                                bgcolor: "#667eea10",
-                                color: "#667eea",
-                              },
-                            }}
-                          >
-                            <img src="/edit.png" alt="" className="h-6 w-6" />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteClick(category);
-                            }}
-                            sx={{
-                              "&:hover": {
-                                bgcolor: "#f4433610",
-                                color: "#f44336",
-                              },
-                            }}
-                          >
-                            <img
-                              src="/delete (1).png"
-                              alt=""
-                              className="h-6 w-6"
-                            />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            sx={{
-                              transform:
-                                expandedId === category.id
-                                  ? "rotate(180deg)"
-                                  : "rotate(0deg)",
-                              transition: "transform 0.3s",
-                            }}
-                          >
-                            <ExpandMoreIcon />
-                          </IconButton>
-                        </Stack>
-                      </Box>
-                    </CardContent>
-
-                    {/* Expanded Details */}
-                    <Collapse
-                      in={expandedId === category.id}
-                      timeout="auto"
-                      unmountOnExit
-                    >
-                      <Divider />
-                      <CardContent sx={{ p: 3, bgcolor: "#fafafa" }}>
-                        <Stack spacing={2}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "flex-start",
-                              gap: 1.5,
-                            }}
-                          >
-                            <DescriptionIcon
-                              sx={{ fontSize: 20, color: "#667eea", mt: 0.3 }}
-                            />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Description:
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                              >
-                                {category.description ||
-                                  "No description provided"}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <CalendarTodayIcon
-                              sx={{ fontSize: 20, color: "#667eea" }}
-                            />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Created:
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {formatDate(category.created_at)}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <CalendarTodayIcon
-                              sx={{ fontSize: 20, color: "#667eea" }}
-                            />
-                            <Box>
-                              <Typography variant="body2" fontWeight={600}>
-                                Last Updated:
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {formatDate(category.updated_at)}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Stack>
-                      </CardContent>
-                    </Collapse>
-                  </Card>
-                </Grow>
-              ))}
-            </Stack>
-          )}
-        </Stack>
-      </Container>
+                  {/* Expanded Details */}
+                  {expandedId === category.id && (
+                    <div className="bg-gray-50 border-t border-gray-200 p-4 flex flex-col gap-3">
+                      <div className="flex items-start gap-2">
+                        <img
+                          src="/info.png"
+                          alt=""
+                          className="h-5 w-5 mt-0.5 text-indigo-500"
+                        />
+                        <div>
+                          <p className="font-semibold">Description:</p>
+                          <p className="text-gray-500">
+                            {category.description || "No description provided"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/calendar.png"
+                          alt=""
+                          className="h-5 w-5 text-indigo-500"
+                        />
+                        <div>
+                          <p className="font-semibold">Created:</p>
+                          <p className="text-gray-500">
+                            {formatDate(category.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/calendar.png"
+                          alt=""
+                          className="h-5 w-5 text-indigo-500"
+                        />
+                        <div>
+                          <p className="font-semibold">Last Updated:</p>
+                          <p className="text-gray-500">
+                            {formatDate(category.updated_at)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Transition>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialog.open}
-        onClose={handleDeleteCancel}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            minWidth: 400,
-          },
-        }}
-      >
-        <DialogTitle sx={{ pb: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 2,
-                bgcolor: "#f4433610",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <WarningIcon sx={{ fontSize: 28, color: "#f44336" }} />
-            </Box>
-            <Typography variant="h6" fontWeight={600}>
-              Delete Category
-            </Typography>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: "text.primary" }}>
-            Are you sure you want to delete{" "}
-            <strong>"{deleteDialog.category?.name}"</strong>? This action cannot
-            be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 2 }}>
-          <Button
-            onClick={handleDeleteCancel}
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              borderColor: "#e0e0e0",
-              color: "#757575",
-              "&:hover": {
-                borderColor: "#bdbdbd",
-                bgcolor: "#f5f5f5",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              bgcolor: "#f44336",
-              "&:hover": {
-                bgcolor: "#d32f2f",
-              },
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {deleteDialog.open && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-red-100">
+                <img
+                  src="/warning.svg"
+                  alt=""
+                  className="h-6 w-6 text-red-600"
+                />
+              </div>
+              <h2 className="text-lg font-semibold">Delete Category</h2>
+            </div>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete{" "}
+              <strong>"{deleteDialog.category?.name}"</strong>? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleDeleteCancel}
+                className="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

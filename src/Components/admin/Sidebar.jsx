@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -23,21 +23,37 @@ import {
 
 export default function Sidebar() {
   const [active, setActive] = useState("Dashboard");
+  const [userName, setUserName] = useState("Admin");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Get user from localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.name) {
+          setUserName(user.name);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
+
   const menuItems = [
-    { name: "Dashboard", icon: <DashboardIcon /> },
-    { name: "Products", icon: <InventoryIcon /> },
-    { name: "Orders", icon: <ShoppingCartIcon /> },
-    { name: "Categories", icon: <CategoryIcon /> },
-    { name: "Employees", icon: <PeopleIcon /> },
-    { name: "Offers", icon: <LocalOfferIcon /> },
-    { name: "Kitchen Logs", icon: <RestaurantIcon /> },
+    { name: "Dashboard", icon: <DashboardIcon />, route: "dashboard" },
+    { name: "Products", icon: <InventoryIcon />, route: "products/dashboard" },
+    { name: "Orders", icon: <ShoppingCartIcon />, route: "orders" },
+    { name: "Categories", icon: <CategoryIcon />, route: "categories" },
+    { name: "Employees", icon: <PeopleIcon />, route: "employees" },
+    { name: "Offers", icon: <LocalOfferIcon />, route: "offers" },
+    { name: "Kitchen Logs", icon: <RestaurantIcon />, route: "/kitchen logs" },
   ];
 
   const handleClick = (item) => {
     setActive(item);
-    const route = `/admin/${item.toLowerCase().replace(/\s+/g, "-")}`;
+    const route = `/admin/${item}`;
     navigate(route);
   };
 
@@ -60,7 +76,7 @@ export default function Sidebar() {
           {menuItems.map((item) => (
             <ListItem key={item.name} disablePadding>
               <ListItemButton
-                onClick={() => handleClick(item.name)}
+                onClick={() => handleClick(item.route)}
                 sx={{
                   py: 2,
                   px: 2,
@@ -130,7 +146,7 @@ export default function Sidebar() {
             fontSize: "0.875rem",
           }}
         >
-          Logged in as Admin
+          Logged in as {userName}
         </Typography>
       </Box>
     </Box>
