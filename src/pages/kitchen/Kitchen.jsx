@@ -40,9 +40,9 @@ export default function Kitchen() {
     },
   ];
   return (
-    <div>
+    <div className='bg-amber-500/5'>
       <Navbar backStatus={true} cartStatus={false} />
-      <div className='mb-amber-400 px-17'>
+      <div className='px-17'>
         <div className='flex justify-start items-center gap-4 mb-10 w-fit text-amber-500'>
           <FaKitchenSet className='text-6xl' />
           <div>

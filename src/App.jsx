@@ -19,6 +19,7 @@ import ProductDashboard from './pages/admin/ProductDashboard';
 import PageNotFound from './Components/PageNotFound';
 import Employee from './pages/admin/Employee';
 import Kitchen from './pages/kitchen/Kitchen';
+import Order from './pages/orders/Order';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
       <Route path='/menu/:id' element={<FoodDescription />} />
       <Route path='/checkout' element={<Checkout />} />
       <Route path='/kitchen' element={<Kitchen />} />
+      <Route path='/order/:id' element={<Order />} />
 
       <Route element={<ProtectedAdminRoute />}>
         <Route path='/admin' element={<Layout />}>

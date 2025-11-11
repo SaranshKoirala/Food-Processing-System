@@ -10,14 +10,16 @@ import { LuShoppingBag } from 'react-icons/lu';
 import { GiMoneyStack } from 'react-icons/gi';
 import { useCart } from '../../Context/CartContext';
 import Navbar from '../../Components/Navbar';
+import { useNavigate } from 'react-router-dom';
 
 export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [orderType, setOrderType] = useState('dine-in');
   const [tableNumber, setTableNumber] = useState(null);
   const [name, setName] = useState(null);
+  const navigate = useNavigate();
 
-  const { cartItem } = useCart();
+  const { cartItem, clearCart } = useCart();
 
   const subtotal =
     cartItem?.reduce((total, item) => total + item.price * item.quantity, 0) ||
@@ -25,10 +27,11 @@ export default function Checkout() {
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
-  const handlePlaceOrder = () => {
+  function handlePlaceOrder(e) {
     e.preventDefault();
-    alert('Order placed successfully! 🎉');
-  };
+    // clearCart();
+    navigate('/order/lskjdflsdf654');
+  }
 
   const recommendedProduct = [
     {

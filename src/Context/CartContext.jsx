@@ -1,4 +1,3 @@
-// src/context/CartContext.js
 import { createContext, useContext, useState } from 'react';
 
 const CartContext = createContext();
@@ -13,12 +12,10 @@ export function CartProvider({ children }) {
       );
 
       if (existingItemIndex !== -1) {
-        // Product exists - increase quantity
         const updatedCart = [...cartItem];
         updatedCart[existingItemIndex].quantity += 1;
         return updatedCart;
       } else {
-        // New product - add with quantity 1
         return [...cartItem, { ...item, quantity: 1 }];
       }
     });
@@ -58,7 +55,7 @@ export function CartProvider({ children }) {
     );
   };
 
-  //   const clearCart = () => setCartItem([]);
+  const clearCart = () => setCartItem([]);
 
   const value = {
     cartItem,
@@ -68,7 +65,7 @@ export function CartProvider({ children }) {
     updateQuantity,
     increaseQuantity,
     decreaseQuantity,
-    // clearCart,
+    clearCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
