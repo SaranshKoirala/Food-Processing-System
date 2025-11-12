@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LuUtensilsCrossed } from 'react-icons/lu';
 import { CiUser } from 'react-icons/ci';
 import { GoHash } from 'react-icons/go';
@@ -11,15 +11,17 @@ import { GiMoneyStack } from 'react-icons/gi';
 import { useCart } from '../../Context/CartContext';
 import Navbar from '../../Components/Navbar';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Checkout() {
+  const { cartItem, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [orderType, setOrderType] = useState('dine-in');
   const [tableNumber, setTableNumber] = useState(null);
-  const [name, setName] = useState(null);
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState();
   const navigate = useNavigate();
-
-  const { cartItem, clearCart } = useCart();
 
   const subtotal =
     cartItem?.reduce((total, item) => total + item.price * item.quantity, 0) ||
@@ -27,10 +29,27 @@ export default function Checkout() {
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
-  function handlePlaceOrder(e) {
+  async function handlePlaceOrder(e) {
     e.preventDefault();
-    // clearCart();
-    navigate('/order/lskjdflsdf654');
+
+    try {
+      setLoading(true);
+      const res = await axios.post('http://127.0.0.1:8000/api/orders', {
+        table_number: parseInt(tableNumber),
+        items: cartItem.map((item) => ({
+          product_id: item.id || item.product_id, // Use the correct field
+          quantity: item.quantity || 1,
+        })),
+      });
+      // setCurrentOrder(res.data);
+      navigate(`/order/${res.data.order_id}`);
+      console.log(res.data);
+    } catch (err) {
+      console.error('Failed to fetch the products!', err);
+    } finally {
+      setLoading(false);
+      // clearCart();
+    }
   }
 
   const recommendedProduct = [
@@ -335,8 +354,10 @@ export default function Checkout() {
                   <button
                     type='submit'
                     disabled={!tableNumber || !paymentMethod || !name}
-                    className='bg-amber-500 hover:bg-white shadow-sm rounded-lg w-full h-12 font-semibold text-white hover:text-black transition-all cursor-pointer'>
-                    Place Order
+                    className={`bg-amber-500 hover:bg-white shadow-sm rounded-lg w-full h-12 font-semibold text-white hover:text-black transition-all cursor-pointer ${
+                      loading ? 'animate-ping' : ''
+                    }`}>
+                    {loading ? 'Submiting Order' : 'Place Order'}
                   </button>
 
                   <p className='mt-4 text-muted-foreground text-xs text-center'>

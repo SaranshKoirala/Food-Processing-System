@@ -5,6 +5,8 @@ import { LuCookingPot } from 'react-icons/lu';
 import { FiPackage } from 'react-icons/fi';
 import { MdOutlineDone } from 'react-icons/md';
 import { useCart } from '../../Context/CartContext';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 export default function Order() {
   const { cartItem } = useCart();
@@ -16,6 +18,24 @@ export default function Order() {
     0;
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
+
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        // setLoading(true);
+        const res = await axios.get(`http://127.0.0.1:8000/api/orders/${id}`);
+        const data = res.data;
+        console.log(data);
+      } catch (err) {
+        console.error('Failed to fetch the products!', err);
+      } finally {
+        // setLoading(false);
+      }
+    }
+
+    fetchOrders();
+  }, []);
+
   const orderStatus = [
     {
       id: 1,
@@ -38,6 +58,7 @@ export default function Order() {
       logo: <MdOutlineDone />,
     },
   ];
+
   return (
     <div className='bg-amber-500/5'>
       <Navbar backStatus={true} cartStatus={false} />
@@ -75,7 +96,9 @@ export default function Order() {
           <p className='font-semibold text-xl'>Order Items</p>
           <ul className='py-4'>
             {cartItem?.map((item) => (
-              <li className='flex justify-between items-center mb-6 pl-6'>
+              <li
+                className='flex justify-between items-center mb-6 pl-6'
+                key={item.id}>
                 <div>
                   <p className='font-medium'>{item.name}</p>
                   <p className='text-black/30 text-sm'>

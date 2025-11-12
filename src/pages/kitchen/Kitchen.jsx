@@ -4,45 +4,133 @@ import { IoMdTime } from 'react-icons/io';
 import { LuCookingPot } from 'react-icons/lu';
 import { FiPackage } from 'react-icons/fi';
 import { MdOutlineDone } from 'react-icons/md';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function Kitchen() {
-  const [activeId, setActiveId] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  function handleFoodStatus(id) {
-    setActiveId(id);
-  }
   const foodStatus = [
     {
       id: 0,
-      link: 'All Order',
-      logo: '',
+      statusValue: 'all',
+      label: 'All Order',
+      logo: <FaKitchenSet className='font-bold text-lg' />,
     },
     {
       id: 1,
-      link: 'New Order',
+      statusValue: 'queued',
+      label: 'New Order',
       logo: <IoMdTime className='font-bold text-lg' />,
     },
     {
       id: 2,
-      link: 'Preparing',
+      statusValue: 'processing',
+      label: 'Preparing',
       logo: <LuCookingPot className='font-bold text-lg' />,
     },
     {
       id: 3,
-      link: 'Ready',
+      statusValue: 'ready', // Changed from 'ready' to 'served'
+      label: 'Ready', // Changed from 'Ready' to 'Served'
       logo: <FiPackage className='font-bold text-lg' />,
     },
     {
       id: 4,
-      link: 'Completed',
+      statusValue: 'completed',
+      label: 'Completed',
       logo: <MdOutlineDone className='font-bold text-lg' />,
     },
   ];
+
+  // Fetch orders when selectedStatus changes
+  useEffect(() => {
+    fetchOrdersByStatus(selectedStatus);
+  }, [selectedStatus]);
+
+  const fetchOrdersByStatus = async (status) => {
+    try {
+      setLoading(true);
+
+      if (status === 'all') {
+        // Fetch all orders
+        const res = await axios.get('http://127.0.0.1:8000/api/orders');
+        let allOrders = res.data.orders || res.data || [];
+
+        console.log('Fetched all orders:', allOrders);
+
+        // Sort by created_at (oldest first for FCFS)
+        const sortedOrders = allOrders.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+
+        setOrders(sortedOrders);
+      } else {
+        // Fetch orders by specific status
+        const res = await axios.get(
+          `http://127.0.0.1:8000/api/orders?status=${status}`
+        );
+        let statusOrders = res.data.orders || res.data || [];
+
+        console.log(`Fetched orders with status '${status}':`, statusOrders);
+
+        // Double-check: Filter on frontend as well to ensure correct status
+        statusOrders = statusOrders.filter((order) => order.status === status);
+
+        console.log(
+          `After filtering, orders with status '${status}':`,
+          statusOrders
+        );
+
+        // Sort by created_at (oldest first for FCFS)
+        const sortedOrders = statusOrders.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+
+        setOrders(sortedOrders);
+      }
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+      if (err.response) {
+        console.error('Error details:', err.response.data);
+      }
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  function handleFoodStatus(status) {
+    setSelectedStatus(status);
+    console.log('Selected status:', status);
+  }
+
+  // Function to update order status
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/status`, {
+        status: newStatus,
+      });
+
+      console.log(`Order ${orderId} updated to ${newStatus}`);
+
+      // Refresh orders after update
+      fetchOrdersByStatus(selectedStatus);
+    } catch (err) {
+      console.error('Failed to update status:', err);
+      if (err.response) {
+        console.error('Error details:', err.response.data);
+      }
+      alert('Failed to update order status');
+    }
+  };
+
   return (
-    <div className='bg-amber-500/5'>
+    <div className='bg-amber-500/5 min-h-screen'>
       <Navbar backStatus={true} cartStatus={false} />
-      <div className='px-17'>
+      <div className='px-17 py-6'>
         <div className='flex justify-start items-center gap-4 mb-10 w-fit text-amber-500'>
           <FaKitchenSet className='text-6xl' />
           <div>
@@ -53,27 +141,145 @@ export default function Kitchen() {
           </div>
         </div>
 
-        <ul className='flex justify-start items-center gap-8 mb-10 font-medium text-sm'>
+        {/* Status Filter Buttons */}
+        <ul className='flex flex-wrap justify-start items-center gap-8 mb-10 font-medium text-sm'>
           {foodStatus.map((item) => (
-            <li
+            <button
               key={item.id}
               className={
-                activeId === item.id
-                  ? `group bg-amber-500 px-3 py-2 border border-amber-500/20 rounded-xl  text-white cursor-pointer flex justify-center items-center gap-2 w-35`
-                  : ' group hover:scale-105 transition-all duration-300 px-4 py-2 border border-amber-500 rounded-xl  text-sm cursor-pointer w-35 flex justify-center items-center gap-2 bg-white'
+                selectedStatus === item.statusValue
+                  ? 'group bg-amber-500 px-3 py-2 border border-amber-500/20 rounded-xl text-white cursor-pointer flex justify-center items-center gap-2 w-35 transition-all duration-300'
+                  : 'group hover:scale-105 transition-all duration-300 px-4 py-2 border border-amber-500 rounded-xl text-sm cursor-pointer w-35 flex justify-center items-center gap-2 bg-white'
               }
-              onClick={() => handleFoodStatus(item.id)}>
+              onClick={() => handleFoodStatus(item.statusValue)}>
               {item.logo}
-              <p>{item.link}</p>
-            </li>
+              <p>{item.label}</p>
+            </button>
           ))}
         </ul>
-        <div className='flex justify-center items-center bg-white border border-amber-500 border-dashed rounded-2xl w-full h-70'>
-          <div className='flex flex-col justify-center items-center gap-3 text-black/50'>
-            <FaKitchenSet className='text-6xl' />
-            <p>No Orders Yet</p>
+
+        {/* Orders Display */}
+        {loading ? (
+          <div className='flex justify-center items-center bg-white border border-amber-500 border-dashed rounded-2xl w-full h-70'>
+            <p className='text-black/50'>Loading orders...</p>
           </div>
-        </div>
+        ) : orders.length === 0 ? (
+          <div className='flex justify-center items-center bg-white border border-amber-500 border-dashed rounded-2xl w-full h-70'>
+            <div className='flex flex-col justify-center items-center gap-3 text-black/50'>
+              <FaKitchenSet className='text-6xl' />
+              <p>
+                No {selectedStatus === 'all' ? '' : selectedStatus} Orders Yet
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {/* Orders Count */}
+            <div className='mb-4'>
+              <p className='font-semibold text-amber-600 text-lg'>
+                {orders.length}{' '}
+                {selectedStatus === 'all'
+                  ? 'Total'
+                  : selectedStatus.charAt(0).toUpperCase() +
+                    selectedStatus.slice(1)}{' '}
+                Order{orders.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+
+            {/* Orders Grid */}
+            <div className='gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+              {orders.map((order) => (
+                <div
+                  key={order.id}
+                  className='bg-white shadow-sm hover:shadow-md p-6 border border-amber-500/20 rounded-2xl transition-shadow'>
+                  {/* Order Header */}
+                  <div className='flex justify-between items-center mb-4'>
+                    <h3 className='font-bold text-xl'>Order #{order.id}</h3>
+                    <span
+                      className={`px-3 py-1 rounded-full font-medium text-sm ${
+                        order.status === 'queued'
+                          ? 'bg-orange-500/10 text-orange-600'
+                          : order.status === 'processing'
+                          ? 'bg-blue-500/10 text-blue-600'
+                          : order.status === 'ready'
+                          ? 'bg-green-500/10 text-green-600' // Changed from 'ready'
+                          : order.status === 'completed'
+                          ? 'bg-gray-500/10 text-gray-600'
+                          : 'bg-amber-500/10 text-amber-600'
+                      }`}>
+                      {order.status === 'queued'
+                        ? 'New Order'
+                        : order.status === 'processing'
+                        ? 'Preparing'
+                        : order.status === 'ready'
+                        ? 'Ready' // Changed from 'Ready'
+                        : order.status === 'completed'
+                        ? 'Completed'
+                        : order.status.charAt(0).toUpperCase() +
+                          order.status.slice(1)}
+                    </span>
+                  </div>
+
+                  {/* Table Number */}
+                  <p className='mb-4 text-black/60'>
+                    <span className='font-semibold'>Table:</span>{' '}
+                    {order.table_number}
+                  </p>
+
+                  {/* Order Items */}
+                  <div className='mb-4'>
+                    <p className='mb-2 font-semibold'>Items:</p>
+                    <ul className='space-y-2'>
+                      {order.items?.map((item) => (
+                        <li
+                          key={item.id}
+                          className='flex justify-between items-center bg-amber-500/5 p-2 rounded text-sm'>
+                          <span>{item.product?.name || 'Unknown Item'}</span>
+                          <span className='font-semibold'>
+                            x{item.quantity}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Order Time */}
+                  <p className='mb-4 text-black/40 text-xs'>
+                    Ordered: {new Date(order.created_at).toLocaleString()}
+                  </p>
+
+                  {/* Status Update Buttons */}
+                  <div className='flex flex-wrap gap-2'>
+                    {order.status === 'queued' && (
+                      <button
+                        onClick={() =>
+                          updateOrderStatus(order.id, 'processing')
+                        }
+                        className='flex items-center gap-1 bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        <LuCookingPot /> Start Preparing
+                      </button>
+                    )}
+                    {order.status === 'processing' && (
+                      <button
+                        onClick={() => updateOrderStatus(order.id, 'ready')} // Changed from 'ready'
+                        className='flex items-center gap-1 bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        <FiPackage /> Mark Ready{' '}
+                        {/* Changed from 'Mark Ready' */}
+                      </button>
+                    )}
+                    {order.status === 'ready' && ( // Changed from 'ready'
+                      <button
+                        onClick={() => updateOrderStatus(order.id, 'completed')}
+                        className='flex items-center gap-1 bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        <MdOutlineDone /> Complete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
