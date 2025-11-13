@@ -35,12 +35,12 @@ export default function EditProduct() {
     price: "",
     category_id: "",
     stock: "",
+    food_type: "", // added food_type
   });
 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Fetch product details and categories
     const fetchData = async () => {
       try {
         const [productRes, categoriesRes] = await Promise.all([
@@ -55,6 +55,7 @@ export default function EditProduct() {
           price: product.price || "",
           category_id: product.category_id || "",
           stock: product.stock || "",
+          food_type: product.food_type || "", // autofill food_type
         });
 
         setCategories(categoriesRes.data);
@@ -71,52 +72,26 @@ export default function EditProduct() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error for this field
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Product name is required";
-    }
-
-    if (!formData.price) {
-      newErrors.price = "Price is required";
-    } else if (isNaN(formData.price) || Number(formData.price) <= 0) {
+    if (!formData.name.trim()) newErrors.name = "Product name is required";
+    if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
       newErrors.price = "Price must be a positive number";
-    }
-
-    if (!formData.stock) {
-      newErrors.stock = "Stock is required";
-    } else if (isNaN(formData.stock) || Number(formData.stock) < 0) {
-      newErrors.stock = "Stock must be a non-negative number";
-    }
-
-    if (!formData.category_id) {
-      newErrors.category_id = "Category is required";
-    }
-
+    if (!formData.stock || isNaN(formData.stock) || Number(formData.stock) < 0)
+      newErrors.stock = "Stock must be non-negative";
+    if (!formData.category_id) newErrors.category_id = "Category is required";
+    if (!formData.food_type) newErrors.food_type = "Food type is required"; // validation for food_type
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     setError("");
@@ -129,19 +104,16 @@ export default function EditProduct() {
         price: parseInt(formData.price),
         category_id: parseInt(formData.category_id),
         stock: parseInt(formData.stock),
+        food_type: formData.food_type.toLowerCase(), // match backend validation
       });
 
       setSuccess("Product updated successfully!");
-
-      // Redirect after 1.5 seconds
       setTimeout(() => {
         navigate("/admin/products");
       }, 1500);
     } catch (err) {
       console.error("Failed to update product:", err);
-
       if (err.response?.data?.errors) {
-        // Laravel validation errors
         setErrors(err.response.data.errors);
         setError("Please fix the validation errors");
       } else {
@@ -198,9 +170,7 @@ export default function EditProduct() {
                   color: "#667eea",
                   textTransform: "none",
                   mb: 2,
-                  "&:hover": {
-                    bgcolor: "#667eea10",
-                  },
+                  "&:hover": { bgcolor: "#667eea10" },
                 }}
               >
                 Back to Products
@@ -232,7 +202,6 @@ export default function EditProduct() {
               </Alert>
             </Fade>
           )}
-
           {success && (
             <Fade in>
               <Alert severity="success">{success}</Alert>
@@ -252,7 +221,6 @@ export default function EditProduct() {
             >
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
-                  {/* Product Name */}
                   <TextField
                     fullWidth
                     label="Product Name"
@@ -262,19 +230,7 @@ export default function EditProduct() {
                     error={!!errors.name}
                     helperText={errors.name}
                     required
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#667eea",
-                        },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": {
-                        color: "#667eea",
-                      },
-                    }}
                   />
-
-                  {/* Description */}
                   <TextField
                     fullWidth
                     label="Description"
@@ -283,19 +239,7 @@ export default function EditProduct() {
                     onChange={handleChange}
                     multiline
                     rows={4}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#667eea",
-                        },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": {
-                        color: "#667eea",
-                      },
-                    }}
                   />
-
-                  {/* Price */}
                   <TextField
                     fullWidth
                     label="Price"
@@ -306,19 +250,7 @@ export default function EditProduct() {
                     error={!!errors.price}
                     helperText={errors.price}
                     required
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#667eea",
-                        },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": {
-                        color: "#667eea",
-                      },
-                    }}
                   />
-
-                  {/* Stock */}
                   <TextField
                     fullWidth
                     label="Stock"
@@ -329,19 +261,7 @@ export default function EditProduct() {
                     error={!!errors.stock}
                     helperText={errors.stock}
                     required
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#667eea",
-                        },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": {
-                        color: "#667eea",
-                      },
-                    }}
                   />
-
-                  {/* Category */}
                   <TextField
                     fullWidth
                     select
@@ -352,16 +272,6 @@ export default function EditProduct() {
                     error={!!errors.category_id}
                     helperText={errors.category_id}
                     required
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#667eea",
-                        },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": {
-                        color: "#667eea",
-                      },
-                    }}
                   >
                     <MenuItem value="" disabled>
                       Select a category
@@ -372,8 +282,26 @@ export default function EditProduct() {
                       </MenuItem>
                     ))}
                   </TextField>
+                  {/* Food Type */}
+                  <TextField
+                    fullWidth
+                    select
+                    label="Food Type"
+                    name="food_type"
+                    value={formData.food_type}
+                    onChange={handleChange}
+                    error={!!errors.food_type}
+                    helperText={errors.food_type}
+                    required
+                  >
+                    <MenuItem value="" disabled>
+                      Select food type
+                    </MenuItem>
+                    <MenuItem value="veg">Veg</MenuItem>
+                    <MenuItem value="non-veg">Non-Veg</MenuItem>
+                    <MenuItem value="drinks">Drinks</MenuItem>
+                  </TextField>
 
-                  {/* Submit Button */}
                   <Box sx={{ display: "flex", gap: 2, pt: 2 }}>
                     <Button
                       variant="contained"
@@ -386,48 +314,13 @@ export default function EditProduct() {
                         )
                       }
                       disabled={loading}
-                      sx={{
-                        flex: 1,
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        boxShadow: "0 4px 20px rgba(102, 126, 234, 0.4)",
-                        textTransform: "none",
-                        py: 1.5,
-                        borderRadius: 2,
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        "&:hover": {
-                          background:
-                            "linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)",
-                          boxShadow: "0 6px 25px rgba(102, 126, 234, 0.5)",
-                        },
-                        "&:disabled": {
-                          background: "#e0e0e0",
-                          color: "#9e9e9e",
-                        },
-                      }}
                     >
                       {loading ? "Updating..." : "Update Product"}
                     </Button>
-
                     <Button
                       variant="outlined"
                       onClick={() => navigate("/admin/products")}
                       disabled={loading}
-                      sx={{
-                        flex: 1,
-                        borderColor: "#667eea",
-                        color: "#667eea",
-                        textTransform: "none",
-                        py: 1.5,
-                        borderRadius: 2,
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        "&:hover": {
-                          borderColor: "#667eea",
-                          bgcolor: "#667eea08",
-                        },
-                      }}
                     >
                       Cancel
                     </Button>
