@@ -10,13 +10,23 @@ export function CartProvider({ children }) {
       const existingItemIndex = prevCart.findIndex(
         (prevProduct) => prevProduct.id === item.id
       );
+      let discountedPrice;
+      let quantity = 1;
+      if (item.offers.length > 0) {
+        if (item.offers[0].offer_kind === 'percentage') {
+          discountedPrice =
+            item.price - (item.price * item.offers[0].value) / 100;
+        } else if (item.offers[0].offer_kind === 'buy_x_get_y') {
+          quantity++;
+        }
+      }
 
       if (existingItemIndex !== -1) {
         const updatedCart = [...cartItem];
         updatedCart[existingItemIndex].quantity += 1;
         return updatedCart;
       } else {
-        return [...cartItem, { ...item, quantity: 1 }];
+        return [...cartItem, { ...item, discountedPrice, quantity }];
       }
     });
   };

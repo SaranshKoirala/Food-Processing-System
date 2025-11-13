@@ -58,8 +58,8 @@ export default function Menu() {
     <div>
       <Navbar backStatus={false} cartStatus={true} />
 
-      <div className='relative flex flex-col justify-center items-center gap-18'>
-        <IoIosSearch className='top-4 left-95 absolute text-2xl' />
+      <div className='relative flex flex-col justify-center items-center gap-15 py-4'>
+        <IoIosSearch className='top-8 left-95 absolute text-2xl' />
         <input
           type='search'
           className='px-13 py-2 border border-amber-500/40 rounded-xl focus:outline-amber-500 w-[700px] h-14 text-sm'

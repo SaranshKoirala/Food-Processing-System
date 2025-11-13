@@ -14,9 +14,11 @@ export default function Order() {
   const [activeId, setActiveId] = [1];
 
   const subtotal =
-    cartItem?.reduce((total, item) => total + item.price * item.quantity, 0) ||
-    0;
-  const tax = subtotal * 0.1;
+    cartItem?.reduce((total, item) => {
+      const priceToUse = item.discountedPrice ?? item.price;
+      return total + priceToUse * item.quantity;
+    }, 0) || 0;
+  const tax = subtotal.toFixed(2) * 0.1;
   const total = subtotal + tax;
 
   useEffect(() => {
@@ -106,7 +108,10 @@ export default function Order() {
                   </p>
                 </div>
                 <div className='font-semibold'>
-                  Rs {item.price * item.quantity}
+                  Rs{' '}
+                  {item.discountedPrice
+                    ? item.discountedPrice * item.quantity
+                    : item.price * item.quantity}
                 </div>
               </li>
             ))}
@@ -114,7 +119,9 @@ export default function Order() {
         </div>
         <div className='flex justify-between pt-4'>
           <p className='font-semibold text-xl'>Total</p>
-          <p className='font-semibold text-amber-500 text-2xl'>Rs {total}</p>
+          <p className='font-semibold text-amber-500 text-2xl'>
+            Rs {total.toFixed(2)}
+          </p>
         </div>
       </div>
     </div>

@@ -18,14 +18,15 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [orderType, setOrderType] = useState('dine-in');
   const [tableNumber, setTableNumber] = useState(null);
-  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentOrder, setCurrentOrder] = useState();
   const navigate = useNavigate();
 
   const subtotal =
-    cartItem?.reduce((total, item) => total + item.price * item.quantity, 0) ||
-    0;
+    cartItem?.reduce((total, item) => {
+      const priceToUse = item.discountedPrice ?? item.price;
+      return total + priceToUse * item.quantity;
+    }, 0) || 0;
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
@@ -108,21 +109,7 @@ export default function Checkout() {
                   </div>
 
                   {/* Order Type */}
-                  <div className='space-y-2 md:col-span-2 mb-2'>
-                    <label className='font-medium text-foreground text-sm'>
-                      Your Name*
-                    </label>
-                    <div className='relative'>
-                      <CiUser className='top-3 left-3 absolute w-4 h-4 text-muted-foreground' />
 
-                      <input
-                        className='bg-background py-2 pr-3 pl-10 border border-black/30 border-input focus:border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-ring w-full text-foreground placeholder:text-muted-foreground transition-all'
-                        placeholder='Enter your name'
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </div>
-                  </div>
                   <div className='mb-4'>
                     <label className='py-4 font-medium text-sm'>
                       Order Type
@@ -302,7 +289,6 @@ export default function Checkout() {
               <div className='lg:col-span-1'>
                 <div className='top-8 sticky bg-card bg-white shadow-sm p-6 border border-black/30 rounded-xl'>
                   <div className='flex items-center gap-2 mb-4'>
-                    {/* <ShoppingBag className='w-5 h-5 text-primary' /> */}
                     <LuShoppingBag className='w-5 h-5 text-amber-500' />
 
                     <h2 className='font-medium text-card-foreground text-xl'>
@@ -310,7 +296,7 @@ export default function Checkout() {
                     </h2>
                   </div>
 
-                  <div className='space-y-4 mb-4'>
+                  <div className='space-y-4 mb-4 h-32 overflow-y-scroll'>
                     {cartItem.map((item) => (
                       <div key={item.id} className='flex gap-3'>
                         <div className='flex justify-center items-center bg-black/10 rounded-lg w-12 h-12 text-2xl'>
@@ -325,7 +311,10 @@ export default function Checkout() {
                           </p>
                         </div>
                         <div className='font-medium text-primary text-sm'>
-                          ${(item.price * item.quantity).toFixed(2)}
+                          Rs{' '}
+                          {item.discountedPrice
+                            ? item.discountedPrice * item.quantity
+                            : (item.price * item.quantity).toFixed(2)}
                         </div>
                       </div>
                     ))}
@@ -336,11 +325,11 @@ export default function Checkout() {
                   <div className='space-y-2 mb-4'>
                     <div className='flex justify-between text-black/30 text-sm'>
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>Rs {subtotal.toFixed(2)}</span>
                     </div>
                     <div className='flex justify-between text-black/30 text-sm'>
                       <span>Tax (10%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span>Rs {tax.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -353,7 +342,7 @@ export default function Checkout() {
 
                   <button
                     type='submit'
-                    disabled={!tableNumber || !paymentMethod || !name}
+                    disabled={!tableNumber || !paymentMethod}
                     className={`bg-amber-500 hover:bg-white shadow-sm rounded-lg w-full h-12 font-semibold text-white hover:text-black transition-all cursor-pointer ${
                       loading ? 'animate-ping' : ''
                     }`}>

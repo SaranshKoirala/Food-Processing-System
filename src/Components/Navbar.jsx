@@ -18,9 +18,13 @@ export default function Navbar({ backStatus, cartStatus }) {
     setIsCartOpen((open) => !open);
   }
 
-  const totalPrice =
-    cartItem?.reduce((total, item) => total + item.price * item.quantity, 0) ||
-    0;
+  const subtotal =
+    cartItem?.reduce((total, item) => {
+      const priceToUse = item.discountedPrice ?? item.price;
+      return total + priceToUse * item.quantity;
+    }, 0) || 0;
+  const tax = subtotal.toFixed(2) * 0.1;
+  const total = subtotal + tax;
 
   useEffect(() => {
     if (isCartOpen) {
@@ -39,7 +43,7 @@ export default function Navbar({ backStatus, cartStatus }) {
 
   return (
     <>
-      <nav className='flex justify-between items-center bg-card/80 shadow-[0_4px_6px_-2px_rgba(0,0,0,0.25)] mb-15 px-4 py-3'>
+      <nav className='flex justify-between items-center bg-card/80 shadow-[0_4px_6px_-2px_rgba(0,0,0,0.25)] mb-5 px-4 py-3'>
         {backStatus ? (
           <Link to={'/menu'}>
             <div className='flex justify-center items-center gap-2 hover:bg-amber-500/50 px-3 py-2 hover:rounded-xl text-black'>
@@ -101,10 +105,11 @@ export default function Navbar({ backStatus, cartStatus }) {
                 <div className='flex flex-col gap-1.5'>
                   <p className='font-semibold text-[13px]'>{item.name}</p>
                   <p className='font-semibold text-[13px] text-amber-500'>
-                    Rs {item.price}
+                    Rs{' '}
+                    {item.discountedPrice ? item.discountedPrice : item.price}
                   </p>
 
-                  <div className='flex justify-center items-center gap-2 rounded-xl'>
+                  <div className='flex justify-start items-center gap-2 rounded-xl'>
                     <button
                       className='hover:bg-amber-500 px-0.5 py-0.5 border border-black/30 hover:border-amber-500/50 rounded-md hover:text-white cursor-pointer'
                       onClick={() => decreaseQuantity(item.id)}>
@@ -132,11 +137,11 @@ export default function Navbar({ backStatus, cartStatus }) {
           <div className='px-6 pb-6'>
             <div className='flex justify-between items-center pt-2 border-black/20 border-t text-black/40 text-sm'>
               <p>Subtotal</p>
-              <p>Rs {totalPrice.toFixed(2)}</p>
+              <p>Rs {subtotal.toFixed(2)}</p>
             </div>
             <div className='flex justify-between items-center mb-2 font-semibold'>
               <p>Total</p>
-              <p>Rs {totalPrice.toFixed(2)}</p>
+              <p>Rs {total.toFixed(2)}</p>
             </div>
             <Link to={'/checkout'}>
               <button className='bg-amber-500 p-2 rounded-xl w-full font-semibold text-white cursor-pointer'>
