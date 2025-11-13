@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../../api/axios";
 
 export default function Employee() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -39,22 +42,23 @@ export default function Employee() {
     setSuccess("");
 
     try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const res = await axios.post("register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+      });
+
       setSuccess("Registration successful!");
       setTimeout(() => {
-        // Navigate to login
-        console.log("Redirecting to login...");
+        navigate("/login");
       }, 1500);
     } catch (err) {
-      setError("Registration failed");
+      if (err.response?.data?.errors) setErrors(err.response.data.errors);
+      setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogin = () => {
-    console.log("Navigate to login");
   };
 
   return (

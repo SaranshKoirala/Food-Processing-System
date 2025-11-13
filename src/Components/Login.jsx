@@ -59,8 +59,12 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify({ ...userData, token }));
 
+      console.log(userData);
+
       if (userData.role === "admin") {
         navigate("/admin/dashboard");
+      } else if (userData.role === "employee") {
+        navigate("/kitchen");
       } else {
         setError("You do not have access to the admin dashboard.");
       }

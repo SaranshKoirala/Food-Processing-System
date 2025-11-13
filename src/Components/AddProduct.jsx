@@ -18,13 +18,14 @@ export default function AddProduct() {
     category_id: "",
     stock: "",
     food_type: "",
+    course_type: "", // added
   });
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("/categories/names");
-        setCategories(res.data); // expects array of {id, name}
+        setCategories(res.data);
       } catch (err) {
         console.error(err);
         setError("Failed to load categories");
@@ -48,6 +49,8 @@ export default function AddProduct() {
       newErrors.stock = "Stock must be non-negative";
     if (!formData.category_id) newErrors.category_id = "Category is required";
     if (!formData.food_type) newErrors.food_type = "Food type is required";
+    if (!formData.course_type)
+      newErrors.course_type = "Course type is required"; // added
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -67,7 +70,8 @@ export default function AddProduct() {
         price: parseInt(formData.price),
         category_id: parseInt(formData.category_id),
         stock: parseInt(formData.stock),
-        food_type: formData.food_type.toLowerCase(), // match backend: veg, non-veg, drinks
+        food_type: formData.food_type.toLowerCase(),
+        course_type: formData.course_type.toLowerCase(), // added
       });
 
       setSuccess(res.data.message || "Product created successfully!");
@@ -261,6 +265,33 @@ export default function AddProduct() {
               </select>
               {errors.food_type && (
                 <p className="text-red-500 text-sm mt-1">{errors.food_type}</p>
+              )}
+            </div>
+
+            {/* Course Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Course Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="course_type"
+                value={formData.course_type}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.course_type
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
+                } focus:ring-2 focus:outline-none transition-colors bg-white`}
+              >
+                <option value="">Select course type</option>
+                <option value="Appetizer">Appetizer</option>
+                <option value="Main">Main</option>
+                <option value="Dessert">Dessert</option>
+              </select>
+              {errors.course_type && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.course_type}
+                </p>
               )}
             </div>
 
