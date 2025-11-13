@@ -52,9 +52,11 @@ export default function Navbar({ backStatus, cartStatus }) {
             </div>
           </Link>
         ) : (
-          <h1 className='font-semibold text-amber-600 text-2xl'>
-            Delicious Menu
-          </h1>
+          <Link to={'/'}>
+            <h1 className='font-semibold text-amber-600 text-2xl'>
+              Delicious Menu
+            </h1>
+          </Link>
         )}
 
         {/* Cart */}

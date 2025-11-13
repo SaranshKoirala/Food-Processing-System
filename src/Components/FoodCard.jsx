@@ -17,7 +17,7 @@ export default function FoodCard({ details }) {
         <img
           src='/burger.jpg'
           alt='burger'
-          className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-105 transition-all duration-300'
+          className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-110 transition-all duration-700'
         />
       </Link>
 
@@ -41,6 +41,13 @@ export default function FoodCard({ details }) {
             <p className='bg-blue-100 px-2 border border-blue-400 rounded-xl w-fit font-medium text-blue-700'>
               Drinks
             </p>
+          )}
+          {stock < 5 ? (
+            <p className='bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit'>
+              Stock available: {stock}
+            </p>
+          ) : (
+            ''
           )}
         </div>
         <p className='w-full h-10 text-gray-600 text-sm'>{description}</p>
