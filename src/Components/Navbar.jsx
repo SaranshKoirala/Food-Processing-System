@@ -21,9 +21,11 @@ export default function Navbar({ backStatus, cartStatus }) {
   const subtotal =
     cartItem?.reduce((total, item) => {
       const priceToUse = item.discountedPrice ?? item.price;
+      // Only charge for the quantity purchased, not the free items
       return total + priceToUse * item.quantity;
     }, 0) || 0;
-  const tax = subtotal.toFixed(2) * 0.1;
+
+  const tax = subtotal * 0.1; // Fixed: was multiplying string with toFixed(2)
   const total = subtotal + tax;
 
   useEffect(() => {
@@ -117,7 +119,11 @@ export default function Navbar({ backStatus, cartStatus }) {
                       onClick={() => decreaseQuantity(item.id)}>
                       <FiMinus className='text-[13px]' />
                     </button>
-                    <p className='text-[13px]'>{item.quantity}</p>
+                    <p className='text-[13px]'>
+                      {item.freeQuantity > 0
+                        ? `${item.quantity} (+${item.freeQuantity})`
+                        : item.quantity}
+                    </p>
                     <button
                       className='hover:bg-amber-500 px-0.5 py-0.5 border border-black/30 hover:border-amber-500/50 rounded-md hover:text-white cursor-pointer'
                       onClick={() => increaseQuantity(item.id)}>

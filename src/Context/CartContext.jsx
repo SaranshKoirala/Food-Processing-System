@@ -10,23 +10,57 @@ export function CartProvider({ children }) {
       const existingItemIndex = prevCart.findIndex(
         (prevProduct) => prevProduct.id === item.id
       );
-      let discountedPrice;
-      let quantity = 1;
+
+      let discountedPrice = item.price;
+      let quantityToAdd = 1;
+      let freeQuantity = 0;
+
+      // Check for offers
       if (item.offers.length > 0) {
-        if (item.offers[0].offer_kind === 'percentage') {
-          discountedPrice =
-            item.price - (item.price * item.offers[0].value) / 100;
-        } else if (item.offers[0].offer_kind === 'buy_x_get_y') {
-          quantity++;
+        const offer = item.offers[0];
+
+        if (offer.offer_kind === 'percentage') {
+          discountedPrice = item.price - (item.price * offer.value) / 100;
+        } else if (offer.offer_kind === 'buy_x_get_y') {
+          // Store offer info for later calculation
+          // Don't add free items yet - wait until buy_quantity is reached
         }
       }
 
       if (existingItemIndex !== -1) {
-        const updatedCart = [...cartItem];
-        updatedCart[existingItemIndex].quantity += 1;
+        const updatedCart = [...prevCart];
+        const currentItem = updatedCart[existingItemIndex];
+
+        // Check if buy_x_get_y offer applies
+        if (
+          item.offers.length > 0 &&
+          item.offers[0].offer_kind === 'buy_x_get_y'
+        ) {
+          const offer = item.offers[0];
+          const newQuantity = currentItem.quantity + 1;
+
+          // Calculate how many free items user should get
+          const setsCompleted = Math.floor(newQuantity / offer.buy_quantity);
+          freeQuantity = setsCompleted * offer.get_quantity;
+
+          updatedCart[existingItemIndex].quantity = newQuantity;
+          updatedCart[existingItemIndex].freeQuantity = freeQuantity;
+        } else {
+          updatedCart[existingItemIndex].quantity += 1;
+        }
+
         return updatedCart;
       } else {
-        return [...cartItem, { ...item, discountedPrice, quantity }];
+        return [
+          ...prevCart,
+          {
+            ...item,
+            discountedPrice,
+            quantity: quantityToAdd,
+            freeQuantity: 0,
+            offer: item.offers[0] || null,
+          },
+        ];
       }
     });
   };
@@ -47,21 +81,78 @@ export function CartProvider({ children }) {
     );
   };
 
-  const increaseQuantity = (productId) => {
+  // const increaseQuantity = (productId) => {
+  //   setCartItem((prevCart) =>
+  //     prevCart.map((item) =>
+  //       item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+  //     )
+  //   );
+  // };
+
+  const increaseQuantity = (itemId) => {
     setCartItem((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-      )
+      prevCart.map((item) => {
+        if (item.id === itemId) {
+          const newQuantity = item.quantity + 1;
+          let freeQuantity = 0;
+
+          // Recalculate free quantity if buy_x_get_y offer exists
+          if (
+            item.offers?.length > 0 &&
+            item.offers[0].offer_kind === 'buy_x_get_y'
+          ) {
+            const offer = item.offers[0];
+            const setsCompleted = Math.floor(newQuantity / offer.buy_quantity);
+            freeQuantity = setsCompleted * offer.get_quantity;
+          }
+
+          return {
+            ...item,
+            quantity: newQuantity,
+            freeQuantity: freeQuantity,
+          };
+        }
+        return item;
+      })
     );
   };
 
-  const decreaseQuantity = (productId) => {
-    setCartItem((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
+  const decreaseQuantity = (itemId) => {
+    setCartItem(
+      (prevCart) =>
+        prevCart
+          .map((item) => {
+            if (item.id === itemId) {
+              const newQuantity = item.quantity - 1;
+
+              // Remove item if quantity becomes 0
+              if (newQuantity <= 0) {
+                return null;
+              }
+
+              let freeQuantity = 0;
+
+              // Recalculate free quantity if buy_x_get_y offer exists
+              if (
+                item.offers?.length > 0 &&
+                item.offers[0].offer_kind === 'buy_x_get_y'
+              ) {
+                const offer = item.offers[0];
+                const setsCompleted = Math.floor(
+                  newQuantity / offer.buy_quantity
+                );
+                freeQuantity = setsCompleted * offer.get_quantity;
+              }
+
+              return {
+                ...item,
+                quantity: newQuantity,
+                freeQuantity: freeQuantity,
+              };
+            }
+            return item;
+          })
+          .filter(Boolean) // Remove null items (when quantity became 0)
     );
   };
 

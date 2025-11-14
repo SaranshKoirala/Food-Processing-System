@@ -4,8 +4,17 @@ import { useCart } from '../Context/CartContext.jsx';
 import { MdOutlineLocalOffer } from 'react-icons/md';
 
 export default function FoodCard({ details }) {
-  const { id, name, price, description, category, food_type, stock, offers } =
-    details;
+  const {
+    id,
+    name,
+    price,
+    description,
+    category,
+    food_type,
+    stock,
+    offers,
+    course_type,
+  } = details;
   // const [offer, setOffer] = useState(false);
   const food = details;
   const discountedPrice = price - (price * offers[0]?.value) / 100;
@@ -20,7 +29,9 @@ export default function FoodCard({ details }) {
           className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-110 transition-all duration-700'
         />
       </Link>
-
+      <div className='top-2 right-2 absolute bg-white px-2 py-1 rounded-xl font-medium text-[13px]'>
+        {course_type.charAt(0).toUpperCase() + course_type.slice(1)}
+      </div>
       <div className='flex flex-col gap-3 p-4 hover:text-amber-500'>
         <p className='font-semibold text-xl'>{name}</p>
 
@@ -75,9 +86,8 @@ export default function FoodCard({ details }) {
           </button>
         </div>
       </div>
-
       {/* Place for offers in percentage mostly */}
-      <div className='top-2 z-200 absolute mx-auto px-2 w-[90%] h-auto'>
+      {/* <div className='top-2 z-10 absolute mx-auto px-2 w-[90%] h-auto'>
         {offers.length >= 1 && (
           <div className='flex justify-between items-center'>
             {offers[0].offer_kind === 'percentage' ? (
@@ -97,6 +107,29 @@ export default function FoodCard({ details }) {
                 </div>
               </div>
             )}
+          </div>
+        )}
+      </div> */}
+      {console.log('Offer data:', offers[0])}
+      {console.log('Offer kind:', offers[0]?.offer_kind)}
+      {console.log('Value:', offers[0]?.value)}
+      <div className='top-2 z-10 absolute mx-auto px-2 w-[90%] h-auto'>
+        {offers?.length >= 1 && (
+          <div className='flex justify-between items-center'>
+            {offers[0].offer_kind === 'percentage' ? (
+              <div className='flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse'>
+                <MdOutlineLocalOffer />
+                <p>{Number(offers[0].value).toFixed(0)}%</p>
+                <p>OFF</p>
+              </div>
+            ) : offers[0].offer_kind === 'buy_x_get_y' ? (
+              <div className='flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse'>
+                <MdOutlineLocalOffer />
+                <p>
+                  Buy {offers[0].buy_quantity} Get {offers[0].get_quantity} Free
+                </p>
+              </div>
+            ) : null}
           </div>
         )}
       </div>

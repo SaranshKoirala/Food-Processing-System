@@ -307,7 +307,7 @@ export default function Checkout() {
                             {item.name}
                           </h3>
                           <p className='text-[13px] text-muted-foreground'>
-                            Qty: {item.quantity}
+                            Qty: {item.quantity + item.freeQuantity}
                           </p>
                         </div>
                         <div className='font-medium text-primary text-sm'>

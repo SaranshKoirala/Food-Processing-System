@@ -5,14 +5,14 @@ import { LuCookingPot } from 'react-icons/lu';
 import { FiPackage } from 'react-icons/fi';
 import { MdOutlineDone } from 'react-icons/md';
 import { useCart } from '../../Context/CartContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Order() {
-  const { cartItem } = useCart();
+  const { cartItem, clearCart } = useCart();
   const { id } = useParams();
   const [activeId, setActiveId] = [1];
-
+  const [orderDetails, setOrderDetails] = useState();
   const subtotal =
     cartItem?.reduce((total, item) => {
       const priceToUse = item.discountedPrice ?? item.price;
@@ -25,8 +25,10 @@ export default function Order() {
     async function fetchOrders() {
       try {
         // setLoading(true);
+        clearCart();
         const res = await axios.get(`http://127.0.0.1:8000/api/orders/${id}`);
         const data = res.data;
+        setOrderDetails(data);
         console.log(data);
       } catch (err) {
         console.error('Failed to fetch the products!', err);
@@ -36,7 +38,7 @@ export default function Order() {
     }
 
     fetchOrders();
-  }, []);
+  }, [orderDetails?.status]);
 
   const orderStatus = [
     {
@@ -67,12 +69,21 @@ export default function Order() {
       <div className='bg-white shadow-2xl mx-auto mb-6 p-7 px-10 rounded-xl w-[900px] h-auto'>
         <div className='mb-5 text-amber-500 text-center'>
           <h1 className='font-semibold text-3xl'>Order #{id}</h1>
-          <p className='text-black/50'>Thank you, {}</p>
+          <p className='text-black/50'>Thank you for ordering.</p>
         </div>
         <div className='mb-5 w-full'>
           <p className='pb-2 text-sm'>Order Status</p>
           <div className='bg-amber-600/10 rounded-2xl w-full h-3'>
-            <div className='bg-amber-600 rounded-2xl w-[25%] h-full'></div>
+            <div
+              className={`bg-amber-600 rounded-2xl  h-full ${
+                orderDetails?.status === 'queued'
+                  ? 'w-[25%]'
+                  : orderDetails?.status === 'processing'
+                  ? 'w-[50%]'
+                  : orderDetails?.status === 'ready'
+                  ? 'w-[75%]'
+                  : 'w-full'
+              }`}></div>
           </div>
         </div>
         <div className='flex justify-between items-center mb-7 pb-6 border-black/20 border-b'>
@@ -97,21 +108,18 @@ export default function Order() {
         <div className='border-black/20 border-b'>
           <p className='font-semibold text-xl'>Order Items</p>
           <ul className='py-4'>
-            {cartItem?.map((item) => (
+            {orderDetails?.order_items.map((item) => (
               <li
                 className='flex justify-between items-center mb-6 pl-6'
-                key={item.id}>
+                key={item.order_id}>
                 <div>
-                  <p className='font-medium'>{item.name}</p>
+                  <p className='font-medium'>{item.product_name}</p>
                   <p className='text-black/30 text-sm'>
                     Qunatity: {item.quantity}
                   </p>
                 </div>
                 <div className='font-semibold'>
-                  Rs{' '}
-                  {item.discountedPrice
-                    ? item.discountedPrice * item.quantity
-                    : item.price * item.quantity}
+                  Rs {item.total_product_price}
                 </div>
               </li>
             ))}
@@ -120,7 +128,7 @@ export default function Order() {
         <div className='flex justify-between pt-4'>
           <p className='font-semibold text-xl'>Total</p>
           <p className='font-semibold text-amber-500 text-2xl'>
-            Rs {total.toFixed(2)}
+            Rs {orderDetails?.total_amount}
           </p>
         </div>
       </div>
