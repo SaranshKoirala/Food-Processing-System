@@ -10,11 +10,11 @@ import { LuShoppingBag } from 'react-icons/lu';
 import { GiMoneyStack } from 'react-icons/gi';
 import { useCart } from '../../Context/CartContext';
 import Navbar from '../../Components/Navbar';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Checkout() {
-  const { cartItem, clearCart } = useCart();
+  const { cartItem, recommendedProducts, setRecommendedProducts } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [orderType, setOrderType] = useState('dine-in');
   const [tableNumber, setTableNumber] = useState(null);
@@ -30,6 +30,66 @@ export default function Checkout() {
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
+  useEffect(() => {
+    async function fetchRecommendedProducts() {
+      if (cartItem.length === 0) return;
+
+      try {
+        const promises = cartItem.map((item) =>
+          axios.get(
+            `http://127.0.0.1:8000/api/products/${item.id}/recommendations`
+          )
+        );
+
+        const results = await Promise.all(promises);
+
+        // Log to see the actual structure
+        console.log('API Response:', results[0].data);
+
+        // Handle different response structures
+        const allRecommendations = results
+          .map((res) => {
+            // If data is already an array
+            if (Array.isArray(res.data)) {
+              return res.data;
+            }
+            // If data is wrapped in an object (e.g., { recommendations: [...] })
+            else if (res.data.recommendations) {
+              return res.data.recommendations;
+            }
+            // If data is wrapped differently (e.g., { data: [...] })
+            else if (res.data.data) {
+              return res.data.data;
+            }
+            // If it's a single object, wrap it in array
+            else {
+              return [res.data];
+            }
+          })
+          .flat();
+
+        // Remove duplicates based on product id
+        const uniqueRecommendations = allRecommendations.filter(
+          (product, index, self) =>
+            index === self.findIndex((p) => p.id === product.id)
+        );
+
+        // Limit to 5 products
+        const limitedRecommendations = uniqueRecommendations.slice(0, 5);
+
+        console.log(
+          'Unique & Limited Recommendations:',
+          limitedRecommendations
+        );
+        setRecommendedProducts(limitedRecommendations);
+      } catch (error) {
+        console.log('Error while fetching:', error);
+      }
+    }
+
+    fetchRecommendedProducts();
+  }, [cartItem, setRecommendedProducts]);
+
   async function handlePlaceOrder(e) {
     e.preventDefault();
 
@@ -42,43 +102,15 @@ export default function Checkout() {
           quantity: item.quantity || 1,
         })),
       });
-      // setCurrentOrder(res.data);
       navigate(`/order/${res.data.order_id}`);
       console.log(res.data);
     } catch (err) {
       console.error('Failed to fetch the products!', err);
     } finally {
       setLoading(false);
-      // clearCart();
     }
   }
 
-  const recommendedProduct = [
-    {
-      id: 1,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 2,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 3,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 4,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-  ];
   return (
     <>
       <Navbar backStatus={true} cartStatus={false} />
@@ -359,20 +391,22 @@ export default function Checkout() {
           <div className='self-start'>
             <p className='mb-4 text-xl'>You may also like </p>
             <ul className='flex justify-start items-center gap-4 list-none'>
-              {recommendedProduct.map((product) => (
-                <li key={product.id} className='shadow-2xl rounded-sm h-53'>
-                  <img
-                    src='/burger.jpg'
-                    alt={product.name}
-                    className='rounded-t-md w-50 h-40'
-                  />
-                  <div className='px-2 py-1'>
-                    <p className='font-md text-sm'>{product.name}</p>
-                    <p className='font-md text-[13px] text-amber-600'>
-                      Rs. {product.price}
-                    </p>
-                  </div>
-                </li>
+              {recommendedProducts.map((product) => (
+                <Link to={`/menu/${product.id}`}>
+                  <li key={product.id} className='shadow-2xl rounded-sm h-53'>
+                    <img
+                      src='/burger.jpg'
+                      alt={product.name}
+                      className='rounded-t-md w-50 h-40'
+                    />
+                    <div className='px-2 py-1'>
+                      <p className='font-md text-sm'>{product.name}</p>
+                      <p className='font-md text-[13px] text-amber-600'>
+                        Rs. {product.price}
+                      </p>
+                    </div>
+                  </li>
+                </Link>
               ))}
             </ul>
           </div>

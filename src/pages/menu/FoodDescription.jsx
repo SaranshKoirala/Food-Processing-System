@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import { useCart } from '../../Context/CartContext';
 
 export default function FoodDescription() {
   const { id } = useParams();
 
-  const { addToCart } = useCart();
+  const { addToCart, recommendedProducts, setRecommendedProducts, cartItem } =
+    useCart();
   const [productDetail, setProductDetail] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -27,34 +28,40 @@ export default function FoodDescription() {
     }
 
     fetchProduct();
-  }, []);
+  }, [id]);
 
-  const recommendedProduct = [
-    {
-      id: 1,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 2,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 3,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-    {
-      id: 4,
-      name: 'Coca Cola',
-      price: 80,
-      image: '',
-    },
-  ];
+  useEffect(() => {
+    async function fetchRecommendedProducts() {
+      try {
+        const res = await axios.get(
+          `http://127.0.0.1:8000/api/products/${id}/recommendations`
+        );
+
+        console.log('API Response:', res.data);
+
+        let recommendations = [];
+
+        if (Array.isArray(res.data)) {
+          recommendations = res.data;
+        } else if (res.data.recommendations) {
+          recommendations = res.data.recommendations;
+        } else if (res.data.data) {
+          recommendations = res.data.data;
+        } else {
+          recommendations = [res.data];
+        }
+
+        const limitedRecommendations = recommendations.slice(0, 5);
+
+        console.log('Limited Recommendations:', limitedRecommendations);
+        setRecommendedProducts(limitedRecommendations);
+      } catch (error) {
+        console.log('Error while fetching:', error);
+      }
+    }
+
+    fetchRecommendedProducts();
+  }, [setRecommendedProducts, id]);
 
   return (
     <div>
@@ -106,20 +113,22 @@ export default function FoodDescription() {
         <div className='self-start'>
           <p className='mb-3 text-xl'>You may also like </p>
           <ul className='flex justify-center items-center gap-4 list-none'>
-            {recommendedProduct.map((product) => (
-              <li key={product.id} className='shadow-2xl rounded-sm h-53'>
-                <img
-                  src='/burger.jpg'
-                  alt={product.name}
-                  className='rounded-t-md w-50 h-40'
-                />
-                <div className='px-2 py-1'>
-                  <p className='font-md text-sm'>{product.name}</p>
-                  <p className='font-md text-[13px] text-amber-600'>
-                    Rs. {product.price}
-                  </p>
-                </div>
-              </li>
+            {recommendedProducts.map((product) => (
+              <Link to={`/menu/${product.id}`}>
+                <li key={product.id} className='shadow-2xl rounded-sm h-53'>
+                  <img
+                    src='/burger.jpg'
+                    alt={product.name}
+                    className='rounded-t-md w-50 h-40'
+                  />
+                  <div className='px-2 py-1'>
+                    <p className='font-md text-sm'>{product.name}</p>
+                    <p className='font-md text-[13px] text-amber-600'>
+                      Rs. {product.price}
+                    </p>
+                  </div>
+                </li>
+              </Link>
             ))}
           </ul>
         </div>
