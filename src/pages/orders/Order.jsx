@@ -9,10 +9,15 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Order() {
-  const { cartItem, clearCart, recommendedProducts, setRecommendedProducts } =
-    useCart();
+  const {
+    cartItem,
+    clearCart,
+    recommendedProducts,
+    setRecommendedProducts,
+    setOrderId,
+  } = useCart();
   const { id } = useParams();
-  const [activeId, setActiveId] = [1];
+  const [activeId, setActiveId] = useState(1);
   const [orderDetails, setOrderDetails] = useState();
   const subtotal =
     cartItem?.reduce((total, item) => {
@@ -21,16 +26,27 @@ export default function Order() {
     }, 0) || 0;
   const tax = subtotal.toFixed(2) * 0.1;
   const total = subtotal + tax;
+  console.log('currentOrders', orderDetails);
 
   useEffect(() => {
     async function fetchOrders() {
       try {
         // setLoading(true);
         clearCart();
+        setOrderId(id);
         const res = await axios.get(`http://127.0.0.1:8000/api/orders/${id}`);
         const data = res.data;
         setOrderDetails(data);
-        console.log(recommendedProducts);
+        const newActiveId =
+          data.status === 'queued'
+            ? 1
+            : data.status === 'processing'
+            ? 2
+            : data.status === 'ready'
+            ? 3
+            : 1;
+
+        setActiveId(newActiveId);
       } catch (err) {
         console.error('Failed to fetch the products!', err);
       } finally {

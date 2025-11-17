@@ -5,6 +5,7 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
   const [cartItem, setCartItem] = useState([]);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [orderId, setOrderId] = useState(null);
 
   const addToCart = (item) => {
     setCartItem((prevCart) => {
@@ -82,14 +83,6 @@ export function CartProvider({ children }) {
     );
   };
 
-  // const increaseQuantity = (productId) => {
-  //   setCartItem((prevCart) =>
-  //     prevCart.map((item) =>
-  //       item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-  //     )
-  //   );
-  // };
-
   const increaseQuantity = (itemId) => {
     setCartItem((prevCart) =>
       prevCart.map((item) => {
@@ -160,6 +153,8 @@ export function CartProvider({ children }) {
   const clearCart = () => setCartItem([]);
 
   const value = {
+    orderId,
+    setOrderId,
     cartItem,
     setCartItem,
     addToCart,

@@ -1,4 +1,4 @@
-import Navbar from '../../Components/Navbar';
+import { IoIosLogOut } from 'react-icons/io';
 import { FaKitchenSet } from 'react-icons/fa6';
 import { IoMdTime } from 'react-icons/io';
 import { LuCookingPot } from 'react-icons/lu';
@@ -11,6 +11,8 @@ export default function Kitchen() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  console.log('orders', orders);
 
   const foodStatus = [
     {
@@ -129,15 +131,20 @@ export default function Kitchen() {
 
   return (
     <div className='bg-amber-500/5 min-h-screen'>
-      <Navbar backStatus={true} cartStatus={false} />
+      {/* <Navbar backStatus={true} cartStatus={false} /> */}
       <div className='px-17 py-6'>
-        <div className='flex justify-start items-center gap-4 mb-10 w-fit text-amber-500'>
-          <FaKitchenSet className='text-6xl' />
-          <div>
-            <h1 className='font-bold text-4xl'>Kitchen Dashboard</h1>
-            <p className='text-black/40'>
-              Manage and track all orders in real-time
-            </p>
+        <div className='flex justify-between items-center mb-10'>
+          <div className='flex justify-start items-center gap-4 w-fit text-amber-500'>
+            <FaKitchenSet className='text-6xl' />
+            <div>
+              <h1 className='font-bold text-4xl'>Kitchen Dashboard</h1>
+              <p className='text-black/40'>
+                Manage and track all orders in real-time
+              </p>
+            </div>
+          </div>
+          <div className='flex justify-center items-center gap-2 hover:bg-red-200 px-3 py-2 border border-amber-500/30 hover:border-red-500 rounded-xl hover:text-red-500 text-sm cursor-pointer'>
+            <IoIosLogOut /> <p>Logout</p>
           </div>
         </div>
 
@@ -221,48 +228,52 @@ export default function Kitchen() {
                   </div>
 
                   {/* Table Number */}
-                  <p className='mb-4 text-black/60'>
+                  <p className='mb-4 text-black'>
                     <span className='font-semibold'>Table:</span>{' '}
                     {order.table_number}
                   </p>
 
                   {/* Order Items */}
-                  <div className='mb-4'>
-                    <p className='mb-2 font-semibold'>Items:</p>
-                    <ul className='space-y-2'>
-                      {order.items?.map((item) => (
+                  <div className='mb-4 pl-4'>
+                    <p className='mb-1 text-black/50'>Items:</p>
+                    <ul className='h-16 overflow-y-scroll scrollbar-hide'>
+                      {order.order_items?.map((item) => (
                         <li
                           key={item.id}
-                          className='flex justify-between items-center bg-amber-500/5 p-2 rounded text-sm'>
-                          <span>{item.product?.name || 'Unknown Item'}</span>
-                          <span className='font-semibold'>
-                            x{item.quantity}
-                          </span>
+                          className='flex justify-between items-center gap-1 bg-amber-500/5 rounded text-sm'>
+                          <div>
+                            <span className='mr-1 font-semibold'>
+                              {item.quantity}x
+                            </span>
+                            <span>{item.product?.name || 'Unknown Item'}</span>
+                          </div>
+                          <div>
+                            <span>{item.grand_total}</span>
+                          </div>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Order Time */}
-                  <p className='mb-4 text-black/40 text-xs'>
+                  {/* <p className='mb-4 text-black/40 text-xs'>
                     Ordered: {new Date(order.created_at).toLocaleString()}
-                  </p>
+                  </p> */}
 
                   {/* Status Update Buttons */}
-                  <div className='flex flex-wrap gap-2'>
+                  <div className='flex gap-2 w-full'>
                     {order.status === 'queued' && (
                       <button
                         onClick={() =>
                           updateOrderStatus(order.id, 'processing')
                         }
-                        className='flex items-center gap-1 bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        className='flex justify-center items-center gap-1 bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg w-full text-white text-sm transition-colors'>
                         <LuCookingPot /> Start Preparing
                       </button>
                     )}
                     {order.status === 'processing' && (
                       <button
                         onClick={() => updateOrderStatus(order.id, 'ready')} // Changed from 'ready'
-                        className='flex items-center gap-1 bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        className='flex justify-center items-center gap-1 bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg w-full text-white text-sm transition-colors'>
                         <FiPackage /> Mark Ready{' '}
                         {/* Changed from 'Mark Ready' */}
                       </button>
@@ -270,7 +281,7 @@ export default function Kitchen() {
                     {order.status === 'ready' && ( // Changed from 'ready'
                       <button
                         onClick={() => updateOrderStatus(order.id, 'completed')}
-                        className='flex items-center gap-1 bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-lg text-white text-sm transition-colors'>
+                        className='flex justify-center items-center gap-1 bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded-lg w-full text-white text-sm transition-colors'>
                         <MdOutlineDone /> Complete
                       </button>
                     )}

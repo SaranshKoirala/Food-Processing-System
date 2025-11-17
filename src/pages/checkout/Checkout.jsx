@@ -14,12 +14,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Checkout() {
-  const { cartItem, recommendedProducts, setRecommendedProducts } = useCart();
+  const { cartItem, recommendedProducts, setRecommendedProducts, clearCart } =
+    useCart();
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [orderType, setOrderType] = useState('dine-in');
   const [tableNumber, setTableNumber] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState();
+
   const navigate = useNavigate();
 
   const subtotal =
@@ -103,7 +104,7 @@ export default function Checkout() {
         })),
       });
       navigate(`/order/${res.data.order_id}`);
-      console.log(res.data);
+      clearCart();
     } catch (err) {
       console.error('Failed to fetch the products!', err);
     } finally {
@@ -328,7 +329,7 @@ export default function Checkout() {
                     </h2>
                   </div>
 
-                  <div className='space-y-4 mb-4 h-32 overflow-y-scroll'>
+                  <div className='space-y-4 mb-4 h-32 overflow-y-scroll scrollbar-hide'>
                     {cartItem.map((item) => (
                       <div key={item.id} className='flex gap-3'>
                         <div className='flex justify-center items-center bg-black/10 rounded-lg w-12 h-12 text-2xl'>

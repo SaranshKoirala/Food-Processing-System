@@ -9,8 +9,13 @@ import { FaLongArrowAltLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 export default function Navbar({ backStatus, cartStatus }) {
-  const { cartItem, increaseQuantity, decreaseQuantity, removeItemFromCart } =
-    useCart();
+  const {
+    cartItem,
+    increaseQuantity,
+    decreaseQuantity,
+    removeItemFromCart,
+    orderId,
+  } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -63,15 +68,24 @@ export default function Navbar({ backStatus, cartStatus }) {
 
         {/* Cart */}
         {cartStatus && (
-          <div
-            className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
-            onClick={toggleCart}>
-            <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
-            {(cartItem?.length || 0) > 0 && (
-              <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
-                {cartItem.length}
-              </p>
+          <div className='flex justify-center items-center gap-4'>
+            {orderId && (
+              <Link to={`/order/${orderId}`}>
+                <div className='p-2 border border-amber-500/30 rounded-xl text- text-sm cursor-pointer'>
+                  Track order
+                </div>
+              </Link>
             )}
+            <div
+              className='group relative flex justify-center items-center hover:bg-amber-600 border-2 border-amber-600 rounded-full w-10 h-10 cursor-pointer'
+              onClick={toggleCart}>
+              <CiShoppingCart className='font-semibold group-hover:text-white text-2xl' />
+              {(cartItem?.length || 0) > 0 && (
+                <p className='-top-3 -right-1 absolute flex justify-center items-center bg-amber-500 rounded-full w-5 h-5 text-white text-sm'>
+                  {cartItem.length}
+                </p>
+              )}
+            </div>
           </div>
         )}
       </nav>
