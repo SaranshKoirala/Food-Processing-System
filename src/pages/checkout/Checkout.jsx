@@ -99,16 +99,16 @@ export default function Checkout() {
       const res = await axios.post('http://127.0.0.1:8000/api/orders', {
         table_number: parseInt(tableNumber),
         items: cartItem.map((item) => ({
-          product_id: item.id || item.product_id, // Use the correct field
+          product_id: item.id || item.product_id,
           quantity: item.quantity || 1,
         })),
       });
       navigate(`/order/${res.data.order_id}`);
-      clearCart();
     } catch (err) {
       console.error('Failed to fetch the products!', err);
     } finally {
       setLoading(false);
+      // clearCart();
     }
   }
 
@@ -346,7 +346,7 @@ export default function Checkout() {
                         <div className='font-medium text-primary text-sm'>
                           Rs{' '}
                           {item.discountedPrice
-                            ? item.discountedPrice * item.quantity
+                            ? (item.discountedPrice * item.quantity).toFixed(2)
                             : (item.price * item.quantity).toFixed(2)}
                         </div>
                       </div>
@@ -370,7 +370,7 @@ export default function Checkout() {
 
                   <div className='flex justify-between mb-4 font-semibold text-xl'>
                     <span className='text-foreground'>Total</span>
-                    <span className='text-primary'>${total.toFixed(2)}</span>
+                    <span className='text-primary'>Rs {total.toFixed(2)}</span>
                   </div>
 
                   <button

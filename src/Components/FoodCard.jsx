@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../Context/CartContext.jsx';
 import { MdOutlineLocalOffer } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 export default function FoodCard({ details }) {
   const {
@@ -81,7 +82,10 @@ export default function FoodCard({ details }) {
 
           <button
             className='bg-amber-500 hover:bg-black/50 rounded-xl w-[60%] text-white text-center transition-all duration-300 cursor-pointer'
-            onClick={() => addToCart(food)}>
+            onClick={() => {
+              addToCart(food);
+              toast.success(`${name} added to cart!`);
+            }}>
             Add to Cart
           </button>
         </div>

@@ -159,6 +159,47 @@ export default function Hero() {
             </div>
           </motion.div>
         </AnimatePresence>
+
+        {/* Slide indicators */}
+        <div className='bottom-8 left-1/2 absolute flex gap-3 -translate-x-1/2'>
+          {offersProduct.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentOrder(index)}
+              className='group relative cursor-pointer'
+              aria-label={`Go to slide ${index + 1}`}>
+              {/* Background glow effect */}
+              {currentOrder === index && (
+                <motion.div
+                  layoutId='activeGlow'
+                  className='absolute inset-0 bg-amber-500/30 blur-md rounded-full'
+                  transition={{ duration: 0.3 }}
+                />
+              )}
+              {/* Dot */}
+              <motion.div
+                className={`relative w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentOrder === index
+                    ? 'bg-amber-500 scale-100'
+                    : 'bg-white/40 group-hover:bg-white/60 scale-75'
+                }`}
+                whileHover={{ scale: 1 }}
+                whileTap={{ scale: 0.9 }}
+              />
+              {/* Active indicator bar */}
+              {/* {currentOrder === index && (
+                <motion.div
+                  layoutId='activeBar'
+                  className='-bottom-2 left-1/2 absolute bg-amber-500 rounded-full w-8 h-0.5 -translate-x-1/2'
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.3 }}
+                />
+              )} */}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

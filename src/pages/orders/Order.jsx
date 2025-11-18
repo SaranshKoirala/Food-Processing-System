@@ -19,13 +19,13 @@ export default function Order() {
   const { id } = useParams();
   const [activeId, setActiveId] = useState(1);
   const [orderDetails, setOrderDetails] = useState();
-  const subtotal =
-    cartItem?.reduce((total, item) => {
-      const priceToUse = item.discountedPrice ?? item.price;
-      return total + priceToUse * item.quantity;
-    }, 0) || 0;
-  const tax = subtotal.toFixed(2) * 0.1;
-  const total = subtotal + tax;
+  // const subtotal =
+  //   cartItem?.reduce((total, item) => {
+  //     const priceToUse = item.discountedPrice ?? item.price;
+  //     return total + priceToUse * item.quantity;
+  //   }, 0) || 0;
+  const tax = Number(orderDetails?.total_amount) * 0.1;
+  // const total = subtotal + tax;
   console.log('currentOrders', orderDetails);
 
   useEffect(() => {
@@ -171,15 +171,13 @@ export default function Order() {
             {orderStatus.map((status) => (
               <div
                 className={`${
-                  activeId === status.id
+                  activeId >= status.id
                     ? ' text-amber-500 border-2 border-amber-500 bg-amber-500/10 text-2xl'
                     : 'text-black/50 text-xl'
                 } flex flex-col justify-center items-center gap-2 bg-amber-500/5 px-10 py-3 rounded-xl`}>
                 <p
                   className={`${
-                    activeId === status.id
-                      ? 'animate-pulse text-amber-500'
-                      : ' '
+                    activeId >= status.id ? 'animate-pulse text-amber-500' : ' '
                   }`}>
                   {status.logo}
                 </p>
@@ -201,9 +199,7 @@ export default function Order() {
                       Qunatity: {item.quantity}
                     </p>
                   </div>
-                  <div className='font-semibold'>
-                    Rs {item.total_product_price}
-                  </div>
+                  <div className='font-semibold'>Rs {item.grand_total}</div>
                 </li>
               ))}
             </ul>
@@ -211,11 +207,12 @@ export default function Order() {
           <div className='flex justify-between pt-4'>
             <p className='font-semibold text-xl'>Total</p>
             <p className='font-semibold text-amber-500 text-2xl'>
-              Rs {orderDetails?.total_amount}
+              Rs {(Number(orderDetails?.total_amount) + tax).toFixed(2)}
             </p>
           </div>
         </div>
 
+        {/* recommendation section */}
         <div className='w-full h-auto'>
           <p className='mb-4 text-xl'>You may also like </p>
 

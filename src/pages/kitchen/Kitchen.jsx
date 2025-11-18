@@ -6,11 +6,14 @@ import { FiPackage } from 'react-icons/fi';
 import { MdOutlineDone } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 export default function Kitchen() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   console.log('orders', orders);
 
@@ -109,6 +112,18 @@ export default function Kitchen() {
     console.log('Selected status:', status);
   }
 
+  async function handleLogout() {
+    try {
+      const res = axios.post('http://127.0.0.1/api/logout');
+      const data = res.data;
+      toast.success('You are logged out!');
+      navigate('/');
+    } catch (e) {
+      console.log('Something happened while logging out.');
+      toast.error("Couldn't logout!");
+    }
+  }
+
   // Function to update order status
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -143,7 +158,9 @@ export default function Kitchen() {
               </p>
             </div>
           </div>
-          <button className='flex justify-center items-center gap-2 hover:bg-red-200 px-3 py-2 border border-amber-500/30 hover:border-red-500 rounded-xl hover:text-red-500 text-sm cursor-pointer'>
+          <button
+            className='flex justify-center items-center gap-2 hover:bg-red-200 px-3 py-2 border border-amber-500/30 hover:border-red-500 rounded-xl hover:text-red-500 text-sm cursor-pointer'
+            onClick={handleLogout}>
             <IoIosLogOut /> <p>Logout</p>
           </button>
         </div>

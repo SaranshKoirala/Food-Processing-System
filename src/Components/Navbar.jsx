@@ -32,6 +32,7 @@ export default function Navbar({ backStatus, cartStatus }) {
 
   const tax = subtotal * 0.1; // Fixed: was multiplying string with toFixed(2)
   const total = subtotal + tax;
+  console.log('cartItem', cartItem);
 
   useEffect(() => {
     if (isCartOpen) {
@@ -124,7 +125,9 @@ export default function Navbar({ backStatus, cartStatus }) {
                   <p className='font-semibold text-[13px]'>{item.name}</p>
                   <p className='font-semibold text-[13px] text-amber-500'>
                     Rs{' '}
-                    {item.discountedPrice ? item.discountedPrice : item.price}
+                    {item.discountedPrice
+                      ? item.discountedPrice.toFixed(2)
+                      : item.price.toFixed(2)}
                   </p>
 
                   <div className='flex justify-start items-center gap-2 rounded-xl'>
