@@ -143,9 +143,9 @@ export default function Kitchen() {
               </p>
             </div>
           </div>
-          <div className='flex justify-center items-center gap-2 hover:bg-red-200 px-3 py-2 border border-amber-500/30 hover:border-red-500 rounded-xl hover:text-red-500 text-sm cursor-pointer'>
+          <button className='flex justify-center items-center gap-2 hover:bg-red-200 px-3 py-2 border border-amber-500/30 hover:border-red-500 rounded-xl hover:text-red-500 text-sm cursor-pointer'>
             <IoIosLogOut /> <p>Logout</p>
-          </div>
+          </button>
         </div>
 
         {/* Status Filter Buttons */}
