@@ -10,6 +10,7 @@ export default function AddProduct() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [errors, setErrors] = useState({});
+  const [image, setImage] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,7 +19,7 @@ export default function AddProduct() {
     category_id: "",
     stock: "",
     food_type: "",
-    course_type: "", // added
+    course_type: "",
   });
 
   useEffect(() => {
@@ -27,7 +28,6 @@ export default function AddProduct() {
         const res = await axios.get("/categories/names");
         setCategories(res.data);
       } catch (err) {
-        console.error(err);
         setError("Failed to load categories");
       }
     };
@@ -50,7 +50,9 @@ export default function AddProduct() {
     if (!formData.category_id) newErrors.category_id = "Category is required";
     if (!formData.food_type) newErrors.food_type = "Food type is required";
     if (!formData.course_type)
-      newErrors.course_type = "Course type is required"; // added
+      newErrors.course_type = "Course type is required";
+    if (!image) newErrors.image = "Image is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -64,14 +66,18 @@ export default function AddProduct() {
     setSuccess("");
 
     try {
-      const res = await axios.post("/products", {
-        name: formData.name,
-        description: formData.description || null,
-        price: parseInt(formData.price),
-        category_id: parseInt(formData.category_id),
-        stock: parseInt(formData.stock),
-        food_type: formData.food_type.toLowerCase(),
-        course_type: formData.course_type.toLowerCase(), // added
+      const fd = new FormData();
+      fd.append("name", formData.name);
+      fd.append("description", formData.description || "");
+      fd.append("price", formData.price);
+      fd.append("category_id", formData.category_id);
+      fd.append("stock", formData.stock);
+      fd.append("food_type", formData.food_type.toLowerCase());
+      fd.append("course_type", formData.course_type.toLowerCase());
+      fd.append("image", image);
+
+      const res = await axios.post("/products", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setSuccess(res.data.message || "Product created successfully!");
@@ -79,7 +85,6 @@ export default function AddProduct() {
         navigate("/admin/products");
       }, 1500);
     } catch (err) {
-      console.error(err);
       if (err.response?.data?.errors) setErrors(err.response.data.errors);
       else if (err.response?.data?.message) setError(err.response.data.message);
       else setError("Failed to create product");
@@ -95,7 +100,6 @@ export default function AddProduct() {
   return (
     <div className="max-h-screen overflow-y-auto bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
-        {/* Header */}
         <div className="animate-fadeIn mb-6">
           <button
             onClick={handleBack}
@@ -112,7 +116,6 @@ export default function AddProduct() {
           </p>
         </div>
 
-        {/* Alerts */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center justify-between animate-fadeIn mb-4">
             <span>{error}</span>
@@ -124,16 +127,30 @@ export default function AddProduct() {
             </button>
           </div>
         )}
+
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg animate-fadeIn mb-4">
             {success}
           </div>
         )}
 
-        {/* Form */}
         <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm animate-fadeIn">
           <div className="space-y-6">
-            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Image <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="w-full"
+              />
+              {errors.image && (
+                <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+              )}
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Product Name <span className="text-red-500">*</span>
@@ -144,10 +161,8 @@ export default function AddProduct() {
                 value={formData.name}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.name
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors`}
+                  errors.name ? "border-red-500" : "border-gray-300"
+                } focus:ring-2`}
                 placeholder="Enter product name"
               />
               {errors.name && (
@@ -155,7 +170,6 @@ export default function AddProduct() {
               )}
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Description
@@ -165,12 +179,11 @@ export default function AddProduct() {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#667eea] focus:ring-2 focus:ring-[#667eea] focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 transition-colors resize-none"
                 placeholder="Enter product description"
               />
             </div>
 
-            {/* Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Price <span className="text-red-500">*</span>
@@ -181,18 +194,14 @@ export default function AddProduct() {
                 value={formData.price}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.price
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors`}
-                placeholder="Enter price"
+                  errors.price ? "border-red-500" : "border-gray-300"
+                } focus:ring-2`}
               />
               {errors.price && (
                 <p className="text-red-500 text-sm mt-1">{errors.price}</p>
               )}
             </div>
 
-            {/* Stock */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Stock <span className="text-red-500">*</span>
@@ -203,18 +212,14 @@ export default function AddProduct() {
                 value={formData.stock}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.stock
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors`}
-                placeholder="Enter stock quantity"
+                  errors.stock ? "border-red-500" : "border-gray-300"
+                } focus:ring-2`}
               />
               {errors.stock && (
                 <p className="text-red-500 text-sm mt-1">{errors.stock}</p>
               )}
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Category <span className="text-red-500">*</span>
@@ -224,10 +229,8 @@ export default function AddProduct() {
                 value={formData.category_id}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.category_id
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors bg-white`}
+                  errors.category_id ? "border-red-500" : "border-gray-300"
+                } focus:ring-2 bg-white`}
               >
                 <option value="">Select a category</option>
                 {categories.map((cat) => (
@@ -243,7 +246,6 @@ export default function AddProduct() {
               )}
             </div>
 
-            {/* Food Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Food Type <span className="text-red-500">*</span>
@@ -253,10 +255,8 @@ export default function AddProduct() {
                 value={formData.food_type}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.food_type
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors bg-white`}
+                  errors.food_type ? "border-red-500" : "border-gray-300"
+                } focus:ring-2 bg-white`}
               >
                 <option value="">Select food type</option>
                 <option value="Veg">Veg</option>
@@ -268,7 +268,6 @@ export default function AddProduct() {
               )}
             </div>
 
-            {/* Course Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Course Type <span className="text-red-500">*</span>
@@ -278,10 +277,8 @@ export default function AddProduct() {
                 value={formData.course_type}
                 onChange={handleChange}
                 className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.course_type
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:border-[#667eea] focus:ring-[#667eea]"
-                } focus:ring-2 focus:outline-none transition-colors bg-white`}
+                  errors.course_type ? "border-red-500" : "border-gray-300"
+                } focus:ring-2 bg-white`}
               >
                 <option value="">Select course type</option>
                 <option value="Appetizer">Appetizer</option>
@@ -295,12 +292,11 @@ export default function AddProduct() {
               )}
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-4 pt-4">
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3 rounded-xl font-semibold shadow-lg hover:from-[#5568d3] hover:to-[#6a3f8f] transition-all disabled:from-gray-300 disabled:to-gray-300 disabled:shadow-none disabled:text-gray-500"
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3 rounded-xl font-semibold shadow-lg"
               >
                 {loading ? (
                   "Creating..."
@@ -310,10 +306,11 @@ export default function AddProduct() {
                   </>
                 )}
               </button>
+
               <button
                 onClick={handleBack}
                 disabled={loading}
-                className="flex-1 border-2 border-[#667eea] text-[#667eea] py-3 rounded-xl font-semibold text-base hover:bg-[#667eea08] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 border-2 border-[#667eea] text-[#667eea] py-3 rounded-xl font-semibold"
               >
                 Cancel
               </button>
