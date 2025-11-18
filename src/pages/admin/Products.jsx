@@ -195,13 +195,7 @@ export default function Products() {
                     >
                       <img src="/delete (1).png" alt="" className="w-5 h-5" />
                     </button>
-                    {/* <img
-                      src="/expand.png"
-                      alt=""
-                      className={`w-5 h-5 transition-transform ${
-                        expandedId === product.id ? "rotate-180" : ""
-                      }`}
-                    /> */}
+
                     <ChevronsDown className="w-5 h-5" />
                   </div>
                 </div>
