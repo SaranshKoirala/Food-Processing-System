@@ -70,7 +70,11 @@ export default function FoodDescription() {
         <div className='relative flex justify-center items-center gap-10'>
           <div className='rounded-3xl w-[500px] h-[450px] overflow-hidden'>
             <img
-              src='/burger.jpg'
+              src={
+                productDetail?.media
+                  ? `http://localhost:8000/storage/${productDetail.media.file_path}`
+                  : '/burger.jpg'
+              }
               alt={productDetail?.name}
               className='rounded-2xl w-full h-full hover:rotate-2 hover:scale-110 transition-transform duration-700'
             />
@@ -85,10 +89,7 @@ export default function FoodDescription() {
             <div>
               <p className='mb-1 font-semibold text-xl'>🍲 About This Dish</p>
               <p className='w-92 font-extralight text-black/40 text-sm'>
-                {productDetail?.description} This is one of the delicious food
-                you'll ever have. . Nothing beats the taste of this food. It is
-                made with specialist so don't fear , your money won't go to
-                waste.
+                {productDetail?.description}
               </p>
             </div>
             <div className='flex flex-col justify-center gap-2'>

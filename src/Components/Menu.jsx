@@ -16,6 +16,8 @@ export default function Menu() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState('all');
 
+  console.log(products);
+
   const menuCourses = [
     { id: 0, link: 'all' },
     { id: 1, link: 'appetizer' },

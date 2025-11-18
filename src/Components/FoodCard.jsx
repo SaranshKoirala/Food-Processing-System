@@ -5,6 +5,7 @@ import { MdOutlineLocalOffer } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 export default function FoodCard({ details }) {
+  const { addToCart } = useCart();
   const {
     id,
     name,
@@ -15,17 +16,24 @@ export default function FoodCard({ details }) {
     stock,
     offers,
     course_type,
+    media,
   } = details;
   // const [offer, setOffer] = useState(false);
   const food = details;
   const discountedPrice = price - (price * offers[0]?.value) / 100;
-
-  const { addToCart } = useCart();
+  function truncateText(text, maxLength) {
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  }
   return (
     <div className='group relative shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[500px] overflow-hidden text-black'>
       <Link to={`/menu/${id}`}>
         <img
-          src='/burger.jpg'
+          src={
+            media
+              ? `http://localhost:8000/storage/${media.file_path}`
+              : '/burger.jpg'
+          }
           alt='burger'
           className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-110 transition-all duration-700'
         />
@@ -62,7 +70,9 @@ export default function FoodCard({ details }) {
             ''
           )}
         </div>
-        <p className='w-full h-10 text-gray-600 text-sm'>{description}</p>
+        <p className='w-full h-10 text-gray-600 text-sm'>
+          {truncateText(description, 50)}
+        </p>
 
         <div
           className={`flex items-center justify-end gap-2 w-full text-black`}>
