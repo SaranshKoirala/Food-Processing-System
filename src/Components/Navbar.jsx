@@ -126,7 +126,7 @@ export default function Navbar({ backStatus, cartStatus }) {
                   <p className='font-semibold text-[13px] text-amber-500'>
                     Rs{' '}
                     {item.discountedPrice
-                      ? item.discountedPrice.toFixed(2)
+                      ? item.discountedPrice
                       : item.price.toFixed(2)}
                   </p>
 
