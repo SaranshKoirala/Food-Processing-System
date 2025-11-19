@@ -47,14 +47,6 @@ export default function Menu() {
     setInput('');
   }
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchProducts();
-    }, 400);
-
-    return () => clearTimeout(delay);
-  }, [input, selectedCourse, selectedCategory]);
-
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -62,25 +54,22 @@ export default function Menu() {
       let data = [];
 
       if (input.trim()) {
-        // 🔍 Search API
         res = await axios.get(
           `http://127.0.0.1:8000/api/products/search?q=${input}`
         );
-        data = res.data.results || [];
+        data = res.data.data || [];
+        console.log('searched data', data);
       } else if (selectedCategory) {
-        // 🍃 Filter by category
         res = await axios.get(
           `http://127.0.0.1:8000/api/e/foodtype/products/${selectedCategory}`
         );
         data = Array.isArray(res.data) ? res.data : res.data.products || [];
-      } else if (selectedCourse && selectedCourse !== 'all') {
-        // 🍽 Filter by course
+      } else if (selectedCourse !== 'all') {
         res = await axios.get(
           `http://127.0.0.1:8000/api/f/coursetype/products/${selectedCourse}`
         );
         data = Array.isArray(res.data) ? res.data : res.data.products || [];
       } else {
-        // 🟢 Load all products
         res = await axios.get('http://127.0.0.1:8000/api/products');
         data = Array.isArray(res.data) ? res.data : res.data.products || [];
       }
@@ -92,13 +81,10 @@ export default function Menu() {
     } finally {
       setLoading(false);
     }
-  }, [input, selectedCourse, selectedCategory]);
+  }, [input, selectedCategory, selectedCourse]);
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchProducts();
-    }, 400);
-
+    const delay = setTimeout(fetchProducts, 400);
     return () => clearTimeout(delay);
   }, [fetchProducts]);
 
