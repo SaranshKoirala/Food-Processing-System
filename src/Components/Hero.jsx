@@ -135,8 +135,8 @@ export default function Hero() {
               <>
                 <p className='font-semibold text-amber-500 text-2xl'>
                   Order {offersProduct[currentOrder]?.offers[0].buy_quantity}{' '}
-                  {offersProduct[currentOrder]?.offers[0].buy_quantity} and get
-                  another absolutely free!
+                  and get {offersProduct[currentOrder]?.offers[0].get_quantity}{' '}
+                  absolutely free!
                 </p>
                 <p className='font-bold text-5xl'>
                   Rs {Number(offersProduct[currentOrder]?.price)}
