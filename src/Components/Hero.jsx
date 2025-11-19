@@ -98,10 +98,10 @@ export default function Hero() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className='top-40 left-40 absolute flex flex-col items-start gap-4 text-2xl'>
-            <h2 className='font-extrabold text-9xl'>
+            <h2 className='overflow-x-visible font-extrabold text-8xl'>
               {offersProduct[currentOrder]?.name}
             </h2>
-            <p className='w-[650px] font-extralight'>
+            <p className='w-[650px] font-extralight text-lg'>
               {offersProduct[currentOrder]?.description} A delicious blend of
               rich flavors, freshly prepared to satisfy your cravings. Perfectly
               cooked with premium ingredients for an unforgettable taste.
@@ -109,7 +109,7 @@ export default function Hero() {
             {offersProduct[currentOrder]?.offers[0].offer_kind ===
             'percentage' ? (
               <>
-                <p className='font-semibold text-amber-500 text-2xl'>
+                <p className='font-semibold text-amber-500 text-3xl'>
                   Save{' '}
                   {Number(
                     offersProduct[currentOrder]?.offers[0].value
@@ -133,7 +133,7 @@ export default function Hero() {
               </>
             ) : (
               <>
-                <p className='font-semibold text-amber-500 text-2xl'>
+                <p className='font-semibold text-amber-500 text-3xl'>
                   Order {offersProduct[currentOrder]?.offers[0].buy_quantity}{' '}
                   and get {offersProduct[currentOrder]?.offers[0].get_quantity}{' '}
                   absolutely free!
