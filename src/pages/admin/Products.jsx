@@ -155,11 +155,11 @@ export default function Products() {
                       <p className="text-gray-800 text-base">{product.name}</p>
                       <div className="flex gap-4 items-center mt-1">
                         <div className="flex items-center gap-1 text-gray-600 text-sm">
-                          <img src="/dollar.png" alt="" className="w-4 h-4" />
+                          Rs.
                           {product.price}
                         </div>
                         <div className="flex items-center gap-1 text-gray-600 text-sm">
-                          <img src="/stock.png" alt="" className="w-4 h-4" />
+                          <img src="/box.png" alt="" className="w-4 h-4" />
                           Stock: {product.stock}
                         </div>
                         <span
@@ -209,7 +209,7 @@ export default function Products() {
                           <span className="font-semibold text-[#667eea]">
                             Price:
                           </span>
-                          ${product.price}
+                          Rs.{product.price}
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-[#667eea]">

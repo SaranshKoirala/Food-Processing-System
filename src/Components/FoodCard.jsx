@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useCart } from '../Context/CartContext.jsx';
-import { MdOutlineLocalOffer } from 'react-icons/md';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useCart } from "../Context/CartContext.jsx";
+import { MdOutlineLocalOffer } from "react-icons/md";
+import { toast } from "react-toastify";
 
 export default function FoodCard({ details }) {
   const { addToCart } = useCart();
@@ -22,96 +22,98 @@ export default function FoodCard({ details }) {
   const food = details;
   // const discountedPrice = price - (price * offers[0]?.value) / 100;
   function truncateText(text, maxLength) {
-    if (!text) return '';
-    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   }
   return (
-    <div className='group relative shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[500px] overflow-hidden text-black'>
+    <div className="group relative shadow-xl border border-amber-600/20 rounded-2xl w-[400px] h-[500px] overflow-hidden text-black">
       <Link to={`/menu/${id}`}>
         <img
           src={
             media
               ? `http://localhost:8000/storage/${media.file_path}`
-              : '/burger.jpg'
+              : "/burger.jpg"
           }
-          alt='burger'
-          className='rounded-t-2xl w-full h-[270px] overflow-hidden group-hover:scale-110 transition-all duration-700'
+          alt="burger"
+          className="rounded-t-2xl w-full h-[270px] overflow-hidden  group-hover:scale-110 transition-all duration-700"
         />
       </Link>
-      <div className='top-2 right-2 absolute bg-white px-2 py-1 rounded-xl font-medium text-[13px]'>
+      <div className="top-2 right-2 absolute bg-white px-2 py-1 rounded-xl font-medium text-[13px]">
         {course_type.charAt(0).toUpperCase() + course_type.slice(1)}
       </div>
-      <div className='flex flex-col gap-3 p-4 hover:text-amber-500'>
-        <p className='font-semibold text-xl'>{name}</p>
+      <div className="flex flex-col gap-3 p-4 hover:text-amber-500">
+        <p className="font-semibold text-xl">{name}</p>
 
-        <div className='flex justify-start items-center gap-2 text-white text-sm'>
-          <p className='bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit'>
+        <div className="flex justify-start items-center gap-2 text-white text-sm">
+          <p className="bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit">
             {category.name}
           </p>
 
-          {food_type === 'veg' ? (
-            <p className='bg-green-100 px-2 border border-green-400 rounded-xl w-fit font-medium text-green-700'>
+          {food_type === "veg" ? (
+            <p className="bg-green-100 px-2 border border-green-400 rounded-xl w-fit font-medium text-green-700">
               Veg
             </p>
-          ) : food_type === 'non-veg' ? (
-            <p className='bg-red-100 px-2 border border-red-400 rounded-xl w-fit font-medium text-red-700'>
+          ) : food_type === "non-veg" ? (
+            <p className="bg-red-100 px-2 border border-red-400 rounded-xl w-fit font-medium text-red-700">
               Non-Veg
             </p>
           ) : (
-            <p className='bg-blue-100 px-2 border border-blue-400 rounded-xl w-fit font-medium text-blue-700'>
+            <p className="bg-blue-100 px-2 border border-blue-400 rounded-xl w-fit font-medium text-blue-700">
               Drinks
             </p>
           )}
           {stock < 5 ? (
-            <p className='bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit'>
+            <p className="bg-gray-400/50 px-1 py-0.5 border border-gray-300 rounded-xl w-fit">
               Stock available: {stock}
             </p>
           ) : (
-            ''
+            ""
           )}
         </div>
-        <p className='w-full h-10 text-gray-600 text-sm'>
+        <p className="w-full h-10 text-gray-600 text-sm">
           {truncateText(description, 50)}
         </p>
 
         <div
-          className={`flex items-center justify-end gap-2 w-full text-black`}>
-          {offers?.length > 0 && offers[0]?.offer_kind === 'percentage' ? (
-            <div className='flex flex-col items-center pb-6 w-[40%]'>
-              <p className='text-gray-500 text-sm line-through'>Rs {price}</p>
-              <p className='font-semibold text-amber-600 text-xl'>
-                Rs{' '}
+          className={`flex items-center justify-end gap-2 w-full text-black`}
+        >
+          {offers?.length > 0 && offers[0]?.offer_kind === "percentage" ? (
+            <div className="flex flex-col items-center pb-6 w-[40%]">
+              <p className="text-gray-500 text-sm line-through">Rs {price}</p>
+              <p className="font-semibold text-amber-600 text-xl">
+                Rs{" "}
                 {(price - (price * Number(offers[0]?.value)) / 100).toFixed(2)}
               </p>
             </div>
           ) : (
-            <div className='p-1 rounded-2xl w-[40%] font-semibold text-amber-600 text-xl text-center cursor-pointer'>
+            <div className="p-1 rounded-2xl w-[40%] font-semibold text-amber-600 text-xl text-center cursor-pointer">
               Rs {price}
             </div>
           )}
 
           <button
-            className='bg-amber-500 hover:bg-black/50 rounded-xl w-[60%] text-white text-center transition-all duration-300 cursor-pointer'
+            className="bg-amber-500 hover:bg-black/50 p-2 rounded-xl w-[60%] text-white text-center transition-all duration-300 cursor-pointer"
             onClick={() => {
               addToCart(food);
               toast.success(`${name} added to cart!`);
-            }}>
+            }}
+          >
             Add to Cart
           </button>
         </div>
       </div>
 
-      <div className='top-2 z-10 absolute mx-auto px-2 w-[90%] h-auto'>
+      <div className="top-2 z-10 absolute mx-auto px-2 w-[90%] h-auto">
         {offers?.length >= 1 && (
-          <div className='flex justify-between items-center'>
-            {offers[0].offer_kind === 'percentage' ? (
-              <div className='flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse'>
+          <div className="flex justify-between items-center">
+            {offers[0].offer_kind === "percentage" ? (
+              <div className="flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse">
                 <MdOutlineLocalOffer />
                 <p>{Number(offers[0].value).toFixed(0)}%</p>
                 <p>OFF</p>
               </div>
-            ) : offers[0].offer_kind === 'buy_x_get_y' ? (
-              <div className='flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse'>
+            ) : offers[0].offer_kind === "buy_x_get_y" ? (
+              <div className="flex justify-center items-center gap-1 bg-red-500 px-2 py-1 rounded-xl font-medium text-[13px] text-white animate-pulse">
                 <MdOutlineLocalOffer />
                 <p>
                   Buy {offers[0].buy_quantity} Get {offers[0].get_quantity} Free

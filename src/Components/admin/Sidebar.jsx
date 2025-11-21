@@ -47,8 +47,8 @@ export default function Sidebar() {
     { name: "Orders", icon: <ShoppingCartIcon />, route: "orders" },
     { name: "Categories", icon: <CategoryIcon />, route: "categories" },
     { name: "Employees", icon: <PeopleIcon />, route: "employees" },
-    { name: "Offers", icon: <LocalOfferIcon />, route: "offers" },
-    { name: "Kitchen Logs", icon: <RestaurantIcon />, route: "/kitchen logs" },
+    // { name: "Offers", icon: <LocalOfferIcon />, route: "offers" },
+    // { name: "Kitchen Logs", icon: <RestaurantIcon />, route: "/kitchen logs" },
   ];
 
   const handleClick = (item) => {

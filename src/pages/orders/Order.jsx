@@ -1,12 +1,12 @@
-import { Link, useParams } from 'react-router-dom';
-import Navbar from '../../Components/Navbar';
-import { IoMdTime } from 'react-icons/io';
-import { LuCookingPot } from 'react-icons/lu';
-import { FiPackage } from 'react-icons/fi';
-import { MdOutlineDone } from 'react-icons/md';
-import { useCart } from '../../Context/CartContext';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { Link, useParams } from "react-router-dom";
+import Navbar from "../../Components/Navbar";
+import { IoMdTime } from "react-icons/io";
+import { LuCookingPot } from "react-icons/lu";
+import { FiPackage } from "react-icons/fi";
+import { MdOutlineDone } from "react-icons/md";
+import { useCart } from "../../Context/CartContext";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Order() {
   const {
@@ -26,7 +26,7 @@ export default function Order() {
   //   }, 0) || 0;
   const tax = Number(orderDetails?.total_amount) * 0.1;
   // const total = subtotal + tax;
-  console.log('currentOrders', orderDetails);
+  console.log("currentOrders", orderDetails);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -38,17 +38,17 @@ export default function Order() {
         const data = res.data;
         setOrderDetails(data);
         const newActiveId =
-          data.status === 'queued'
+          data.status === "queued"
             ? 1
-            : data.status === 'processing'
+            : data.status === "processing"
             ? 2
-            : data.status === 'ready'
+            : data.status === "ready"
             ? 3
             : 1;
 
         setActiveId(newActiveId);
       } catch (err) {
-        console.error('Failed to fetch the products!', err);
+        console.error("Failed to fetch the products!", err);
       } finally {
         // setLoading(false);
       }
@@ -74,7 +74,7 @@ export default function Order() {
         const results = await Promise.all(promises);
 
         // Log to see the actual structure
-        console.log('API Response:', results[0]?.data);
+        console.log("API Response:", results[0]?.data);
 
         // Handle different response structures
         const allRecommendations = results
@@ -108,12 +108,12 @@ export default function Order() {
         const limitedRecommendations = uniqueRecommendations.slice(0, 5);
 
         console.log(
-          'Unique & Limited Recommendations:',
+          "Unique & Limited Recommendations:",
           limitedRecommendations
         );
         setRecommendedProducts(limitedRecommendations);
       } catch (error) {
-        console.log('Error while fetching:', error);
+        console.log("Error while fetching:", error);
       }
     }
 
@@ -123,111 +123,119 @@ export default function Order() {
   const orderStatus = [
     {
       id: 1,
-      name: 'Order Received',
+      name: "Order Received",
       logo: <IoMdTime />,
     },
     {
       id: 2,
-      name: 'Being Prepared',
+      name: "Being Prepared",
       logo: <LuCookingPot />,
     },
     {
       id: 3,
-      name: 'Ready for Pickup',
+      name: "Ready for Pickup",
       logo: <FiPackage />,
     },
     {
       id: 4,
-      name: 'Completed',
+      name: "Completed",
       logo: <MdOutlineDone />,
     },
   ];
 
   return (
-    <div className='bg-amber-500/5'>
+    <div className="bg-amber-500/5">
       <Navbar backStatus={true} cartStatus={false} />
-      <div className='mx-auto rounded-xl w-[1000px]'>
-        <div className='bg-white shadow-2xl mb-6 p-7 px-10 h-auto'>
-          <div className='mb-5 text-amber-500 text-center'>
-            <h1 className='font-semibold text-3xl'>Order #{id}</h1>
-            <p className='text-black/50'>Thank you for ordering.</p>
+      <div className="mx-auto rounded-xl w-[1000px]">
+        <div className="bg-white shadow-2xl mb-6 p-7 px-10 h-auto">
+          <div className="mb-5 text-amber-500 text-center">
+            <h1 className="font-semibold text-3xl">Order #{id}</h1>
+            <p className="text-black/50">Thank you for ordering.</p>
           </div>
-          <div className='mb-5 w-full'>
-            <p className='pb-2 text-sm'>Order Status</p>
-            <div className='bg-amber-600/10 rounded-2xl w-full h-3'>
+          <div className="mb-5 w-full">
+            <p className="pb-2 text-sm">Order Status</p>
+            <div className="bg-amber-600/10 rounded-2xl w-full h-3">
               <div
                 className={`bg-amber-600 rounded-2xl  h-full ${
-                  orderDetails?.status === 'queued'
-                    ? 'w-[25%]'
-                    : orderDetails?.status === 'processing'
-                    ? 'w-[50%]'
-                    : orderDetails?.status === 'ready'
-                    ? 'w-[75%]'
-                    : 'w-full'
-                }`}></div>
+                  orderDetails?.status === "queued"
+                    ? "w-[25%]"
+                    : orderDetails?.status === "processing"
+                    ? "w-[50%]"
+                    : orderDetails?.status === "ready"
+                    ? "w-[75%]"
+                    : "w-full"
+                }`}
+              ></div>
             </div>
           </div>
-          <div className='flex justify-between items-center mb-7 pb-6 border-black/20 border-b'>
+          <div className="flex justify-between items-center mb-7 pb-6 border-black/20 border-b">
             {orderStatus.map((status) => (
               <div
                 className={`${
                   activeId >= status.id
-                    ? ' text-amber-500 border-2 border-amber-500 bg-amber-500/10 text-2xl'
-                    : 'text-black/50 text-xl'
-                } flex flex-col justify-center items-center gap-2 bg-amber-500/5 px-10 py-3 rounded-xl`}>
+                    ? " text-amber-500 border-2 border-amber-500 bg-amber-500/10 text-2xl"
+                    : "text-black/50 text-xl"
+                } flex flex-col justify-center items-center gap-2 bg-amber-500/5 px-10 py-3 rounded-xl`}
+              >
                 <p
                   className={`${
-                    activeId >= status.id ? 'animate-pulse text-amber-500' : ' '
-                  }`}>
+                    activeId >= status.id ? "animate-pulse text-amber-500" : " "
+                  }`}
+                >
                   {status.logo}
                 </p>
-                <p className='font-medium text-[13px]'>{status.name}</p>
+                <p className="font-medium text-[13px]">{status.name}</p>
               </div>
             ))}
           </div>
 
-          <div className='border-black/20 border-b'>
-            <p className='font-semibold text-xl'>Order Items</p>
-            <ul className='py-4'>
+          <div className="border-black/20 border-b">
+            <p className="font-semibold text-xl">Order Items</p>
+            <ul className="py-4">
               {orderDetails?.order_items.map((item) => (
                 <li
-                  className='flex justify-between items-center mb-6 pl-6'
-                  key={item.order_id}>
+                  className="flex justify-between items-center mb-6 pl-6"
+                  key={item.order_id}
+                >
                   <div>
-                    <p className='font-medium'>{item.product_name}</p>
-                    <p className='text-black/30 text-sm'>
+                    <p className="font-medium">{item.product_name}</p>
+                    <p className="text-black/30 text-sm">
                       Qunatity: {item.quantity}
                     </p>
                   </div>
-                  <div className='font-semibold'>Rs {item.grand_total}</div>
+                  <div className="font-semibold">Rs {item.grand_total}</div>
                 </li>
               ))}
             </ul>
           </div>
-          <div className='flex justify-between pt-4'>
-            <p className='font-semibold text-xl'>Total</p>
-            <p className='font-semibold text-amber-500 text-2xl'>
+          <div className="flex justify-between pt-4">
+            <p className="font-semibold text-xl">Total</p>
+            <p className="font-semibold text-amber-500 text-2xl">
               Rs {(Number(orderDetails?.total_amount) + tax).toFixed(2)}
             </p>
           </div>
         </div>
 
         {/* recommendation section */}
-        <div className='w-full h-auto'>
-          <p className='mb-4 text-xl'>You may also like </p>
+        <div className="w-full h-auto">
+          <p className="mb-4 text-xl">You may also like </p>
 
-          <ul className='flex justify-start items-center gap-4 list-none'>
+          <ul className="flex justify-start items-center gap-4 list-none">
             {recommendedProducts.map((product) => (
               <Link to={`/menu/${product.id}`}>
-                <li key={product.id} className='shadow-2xl rounded-sm h-53'>
+                <li key={product.id} className="shadow-2xl rounded-sm h-53">
                   <img
-                    src='/burger.jpg'
+                    src={
+                      product.media
+                        ? `http://localhost:8000/storage/${product.media.file_path}`
+                        : "/burger.jpg"
+                    }
                     alt={product.name}
-                    className='rounded-t-md w-50 h-40'
+                    className="rounded-t-md w-50 h-40"
                   />
-                  <div className='px-2 py-1'>
-                    <p className='font-md text-sm'>{product.name}</p>
-                    <p className='font-md text-[13px] text-amber-600'>
+                  <div className="px-2 py-1">
+                    <p className="font-md text-sm">{product.name}</p>
+                    <p className="font-md text-[13px] text-amber-600">
                       Rs. {product.price}
                     </p>
                   </div>

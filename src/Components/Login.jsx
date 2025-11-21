@@ -96,7 +96,7 @@ export default function Login() {
                   mb: 1,
                 }}
               >
-                Admin Login
+                Login
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 Enter your credentials to access the dashboard
